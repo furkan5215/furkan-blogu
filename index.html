@@ -1,354 +1,179 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mami Garaj | Premium Motors</title>
-    <!-- Sekme için Emoji İkonu (Garantili Çözüm) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
-    
-    <style>
-        :root {
-            --bg-dark: #121212;
-            --surface: #1e1e1e;
-            --primary: #e63946; /* Spor kırmızı */
-            --primary-hover: #c1121f;
-            --text-light: #f1faee;
-            --text-muted: #a8dadc;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Navbar */
-        header {
-            background-color: rgba(30, 30, 30, 0.95);
-            padding: 1rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 2px solid var(--primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--text-light);
-            text-decoration: none;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .logo span {
-            color: var(--primary);
-        }
-
-        /* Hero Bölümü */
-        .hero {
-            background: linear-gradient(rgba(18, 18, 18, 0.75), rgba(18, 18, 18, 0.95)), url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
-            min-height: 50vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            padding: 0 10px;
-        }
-
-        .hero p {
-            font-size: 1rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 2rem;
-            padding: 0 15px;
-        }
-
-        /* Ana İçerik */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 1.5rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 2.5rem;
-            border-bottom: 3px solid var(--primary);
-            display: inline-block;
-            padding-bottom: 0.3rem;
-        }
-
-        .title-wrapper {
-            text-align: center;
-        }
-
-        /* Araç Izgarası - Mobil Uyumlu */
-        .car-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .car-card {
-            background: var(--surface);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
-            border: 1px solid #2a2a2a;
-        }
-
-        .car-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .car-image-container {
-            width: 100%;
-            height: 220px;
-            overflow: hidden;
-            background-color: #222;
-        }
-
-        .car-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .car-card:hover .car-image {
-            transform: scale(1.05);
-        }
-
-        .car-info {
-            padding: 1.5rem;
-        }
-
-        .car-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .car-price {
-            color: var(--primary);
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .car-specs {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
-            border-top: 1px solid #2a2a2a;
-            padding-top: 1rem;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.8rem;
-            text-align: center;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        /* İletişim Formu */
-        .contact-section {
-            background: var(--surface);
-            padding: 3rem 1.5rem;
-            margin-top: 2rem;
-            border-top: 1px solid #2a2a2a;
-        }
-
-        .contact-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.4rem;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.9rem;
-            background: var(--bg-dark);
-            border: 1px solid #333;
-            color: white;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        textarea.form-control {
-            height: 130px;
-            resize: vertical;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            background: #0a0a0a;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Büyük ekranlar için ince ayar */
-        @media (min-width: 768px) {
-            .hero h1 { font-size: 3.5rem; }
-            .hero p { font-size: 1.2rem; }
-            .logo { font-size: 1.8rem; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Yıldız Akını – Uzay aksiyon oyunu</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--b1:#050818;--b2:#150B3A;--ink:#EEF3FF;--mute:#8E9BC9;--acc:#5CF2FF;--hot:#FF4DA6;--card:rgba(14,18,48,.82);--ln:rgba(140,170,255,.22);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b1:#03050F;--b2:#10082B}}
+:root[data-theme="dark"]{--b1:#03050F;--b2:#10082B}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(130% 80% at 50% 100%,var(--b2),var(--b1));color:var(--ink);font:500 16px Sora,system-ui,sans-serif}
+#app{position:relative;height:100%;max-width:560px;margin:0 auto;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+#hud small{display:block;color:var(--mute);font-size:12px}
+#sc{font-size:32px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;text-shadow:0 0 18px var(--acc)}
+.c{text-align:center;padding-top:2px}
+#lv{font-size:18px;color:#FF5D73;letter-spacing:2px;white-space:nowrap}
+#lv u{text-decoration:none;opacity:.22}#lv em{font-style:normal;color:#4DA3FF;margin-left:6px}#lv s{text-decoration:none;color:var(--acc);font-size:12px;margin-left:8px;font-weight:700}
+#mx{position:relative;margin-top:6px;height:22px;width:92px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+#mb{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--hot),#FFB020)}
+#mt{position:relative;display:block;text-align:center;font-weight:800;font-size:13px;line-height:22px}
+#pz{pointer-events:auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--ink);font:800 14px Sora;cursor:pointer}
+#bomb{position:absolute;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));border:1px solid #FFB020;background:rgba(255,176,32,.14);color:#FFB020;border-radius:16px;padding:14px 20px;font:800 15px Sora;cursor:pointer;box-shadow:0 0 22px -4px #FFB020}
+#bomb:disabled{opacity:.3;box-shadow:none}#bomb:active{transform:scale(.94)}
+#ov{position:absolute;inset:0;display:grid;place-items:center;padding:22px;background:rgba(3,4,16,.5);backdrop-filter:blur(6px);transition:opacity .25s}
+#ov.off{opacity:0;pointer-events:none}
+.cd{width:min(360px,100%);background:var(--card);border:1px solid var(--ln);border-radius:26px;padding:28px 24px;text-align:center;box-shadow:0 0 60px -20px var(--acc);max-height:100%;overflow:auto}
+.cd h1{margin:0 0 8px;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.05;background:linear-gradient(100deg,#5CF2FF,#B79CFF 50%,#FF4DA6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cd h2{margin:0 0 10px;font-size:28px;font-weight:800}
+.cd p{margin:0 0 18px;color:var(--mute);font-size:15px;line-height:1.5}
+.bt{margin-bottom:18px}.bt small{color:var(--mute);display:block;font-size:13px}.bt b{font-size:34px;font-weight:800;color:var(--acc)}
+.big{font-size:52px;font-weight:800;line-height:1.1;text-shadow:0 0 24px var(--acc);margin-bottom:6px}
+button[data-a]{width:100%;border:1px solid var(--ln);background:rgba(255,255,255,.06);color:var(--ink);border-radius:14px;padding:13px;font:700 16px Sora;cursor:pointer;margin-top:10px}
+button.pr{border:0;background:linear-gradient(100deg,#19C6E0,#7A4DFF);color:#fff;font-size:18px;padding:15px;box-shadow:0 10px 26px -10px #5CF2FF}
+.two{display:flex;gap:10px}.two button{margin-top:10px}
+.rec{display:inline-block;margin-bottom:10px;padding:5px 14px;border-radius:99px;background:linear-gradient(90deg,#FFB020,#FF4DA6);color:#240A12;font-weight:800;font-size:13px}
+#nm{width:100%;border-radius:14px;border:1px solid var(--ln);background:rgba(255,255,255,.08);color:var(--ink);padding:13px;font:700 17px Sora;text-align:center;margin-bottom:4px;-webkit-user-select:text;user-select:text}
+.lb{list-style:none;margin:0 0 6px;padding:0;text-align:left}
+.lb li{display:flex;gap:12px;align-items:center;padding:9px 12px;border-radius:12px;font-size:15px}
+.lb li:nth-child(odd){background:rgba(255,255,255,.05)}
+.lb li.me{background:rgba(92,242,255,.18);outline:1px solid var(--acc)}
+.lb i{font-style:normal;color:var(--mute);width:20px}.lb span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb b{font-variant-numeric:tabular-nums}
+</style>
 </head>
 <body>
-
-    <header>
-        <a href="#" class="logo">Mami <span>Garaj</span></a>
-        <a href="#iletisim" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.9rem;">Bize Ulaşın</a>
-    </header>
-
-    <section class="hero">
-        <h1>Prestij ve Güç Bir Arada</h1>
-        <p>Hayalinizdeki premium araca ulaşmanın en güvenilir yolu. İkinci elde birinci sınıf deneyim.</p>
-    </section>
-
-    <div class="container">
-        <div class="title-wrapper">
-            <h2 class="section-title">Vitrinimizdeki Araçlar</h2>
-        </div>
-        
-        <div class="car-grid">
-            <!-- Araç 1 -->
-            <div class="car-card">
-                <div class="car-image-container">
-                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" alt="BMW 320i" class="car-image">
-                </div>
-                <div class="car-info">
-                    <h3 class="car-title">BMW 320i M Sport</h3>
-                    <div class="car-price">2.450.000 ₺</div>
-                    <div class="car-specs">
-                        <span>📅 2021</span>
-                        <span>⛽ Benzin</span>
-                        <span>🕹️ Otomatik</span>
-                    </div>
-                    <a href="#iletisim" class="btn">Teklif İste</a>
-                </div>
-            </div>
-
-            <!-- Araç 2 -->
-            <div class="car-card">
-                <div class="car-image-container">
-                    <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600&q=80" alt="Mercedes C200" class="car-image">
-                </div>
-                <div class="car-info">
-                    <h3 class="car-title">Mercedes C200 AMG</h3>
-                    <div class="car-price">2.780.000 ₺</div>
-                    <div class="car-specs">
-                        <span>📅 2022</span>
-                        <span>⚡ Hibrit</span>
-                        <span>🕹️ Otomatik</span>
-                    </div>
-                    <a href="#iletisim" class="btn">Teklif İste</a>
-                </div>
-            </div>
-            
-            <!-- Araç 3 -->
-            <div class="car-card">
-                <div class="car-image-container">
-                    <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80" alt="Audi A4" class="car-image">
-                </div>
-                <div class="car-info">
-                    <h3 class="car-title">Audi A4 S-Line</h3>
-                    <div class="car-price">2.150.000 ₺</div>
-                    <div class="car-specs">
-                        <span>📅 2020</span>
-                        <span>⛽ Dizel</span>
-                        <span>🕹️ Otomatik</span>
-                    </div>
-                    <a href="#iletisim" class="btn">Teklif İste</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- İletişim Formu (Formspree Linkini Unutma) -->
-    <section class="contact-section" id="iletisim">
-        <div class="contact-container">
-            <div class="title-wrapper">
-                <h2 class="section-title">Aracınızı Bulalım</h2>
-            </div>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem;">İlgilendiğiniz aracı veya aradığınız özellikleri bize yazın, sizi hemen arayalım.</p>
-            
-            <form action="https://formspree.io/f/mqpepqbe" method="POST">
-                <div class="form-group">
-                    <label>Adınız Soyadınız</label>
-                    <input type="text" name="isim" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Telefon Numaranız</label>
-                    <input type="tel" name="telefon" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>İlgilendiğiniz Araç / Mesajınız</label>
-                    <textarea name="mesaj" class="form-control" required></textarea>
-                </div>
-                <button type="submit" class="btn">Mesajı Gönder</button>
-            </form>
-        </div>
-    </section>
-
-    <footer>
-        <p>Mami Garaj Motors - Merkez / Karaman</p>
-        <p style="margin-top: 0.5rem; font-size: 0.8rem;">&copy; 2026 Tüm Hakları Saklıdır.</p>
-    </footer>
-
+<div id="app">
+ <canvas id="cv" aria-label="Oyun alanı"></canvas>
+ <div id="hud">
+  <div><small>Skor</small><b id="sc">0</b><small id="bs"></small></div>
+  <div class="c"><div id="lv"></div><div id="mx"><i id="mb"></i><span id="mt">×1</span></div></div>
+  <button id="pz" aria-label="Duraklat">II</button>
+ </div>
+ <button id="bomb" hidden><span id="bm">Bomba ×1</span></button>
+ <div id="ov"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const st={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const cv=$("#cv"),g=cv.getContext("2d"),ov=$("#ov"),KS="ya.skor.v1",KN="ya.ad.v1";
+let W,H,u=1,mode="menu",t=0,score=0,disp=0,chain=0,comboT=0,bombs=1,shake=0,sp=0,bossN=0,stage=1,last=performance.now(),mute=st.g("ya.mute")==="1",ac,nb,ptr=null;
+let ship={x:0,y:0,tx:0,ty:0,lives:3,sh:0,inv:0,wl:1,cd:0,r:10},B=[],E=[],EB=[],PU=[],PT=[],TX=[],RG=[],STAR=[];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),hit=(a,b,r)=>{const x=a.x-b.x,y=a.y-b.y;return x*x+y*y<r*r};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const vib=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+const fmt=n=>n.toLocaleString("tr-TR");
+// ---- skor sistemi (anahtar sabit: güncellemede silinmez)
+const L=()=>{try{const a=JSON.parse(st.g(KS)||"[]");return(Array.isArray(a)?a:[]).filter(x=>x&&typeof x.s==="number").slice(0,10)}catch(e){return[]}};
+const best=()=>(L()[0]||{s:0}).s;
+function board(hl){const a=L();return a.length?'<ol class="lb">'+a.map((x,i)=>`<li class="${i===hl?"me":""}"><i>${i+1}</i><span>${esc(x.n)}</span><b>${fmt(x.s)}</b></li>`).join("")+"</ol>":"<p>Henüz skor yok. İlk rekor senin olsun.</p>"}
+function saveScore(){const nm=($("#nm").value.trim()||"Pilot").slice(0,12);st.s(KN,nm);const e={n:nm,s:score,d:Date.now()},a=L();a.push(e);a.sort((x,y)=>y.s-x.s);const b=a.slice(0,10);st.s(KS,JSON.stringify(b));
+ ov.innerHTML=`<div class="cd"><h2>Skor tablosu</h2>${board(b.indexOf(e))}<button class="pr" data-a="play">Tekrar oyna</button><button data-a="menu">Menü</button></div>`}
+// ---- ekranlar
+function menu(){mode="menu";ov.className="";ov.innerHTML=`<div class="cd"><h1>Yıldız Akını</h1><p>Parmağınla gemiyi sürükle, ateş otomatik. Düşmanları vur, seriyi büyüt, dev gemileri indir.</p><div class="bt"><small>Rekor</small><b>${fmt(best())}</b></div><button class="pr" data-a="play">Oyna</button><div class="two"><button data-a="board">Skorlar</button><button data-a="snd">Ses: ${mute?"Kapalı":"Açık"}</button></div></div>`;hud()}
+function pause(){if(mode!=="play")return;mode="pause";ov.className="";ov.innerHTML=`<div class="cd"><h2>Duraklatıldı</h2><button class="pr" data-a="resume">Devam et</button><button data-a="menu">Ana menü</button></div>`}
+function showOver(){mode="over";const a=L(),q=score>0&&(a.length<10||score>a[a.length-1].s),rc=score>0&&score>(a[0]?a[0].s:0);
+ ov.className="";ov.innerHTML=`<div class="cd">${rc?'<span class="rec">Yeni rekor</span>':""}<h2>Gemi düştü</h2><div class="big">${fmt(score)}</div><p>${rc?"Tablonun zirvesindesin.":q?"İlk 10'a girdin, adını yaz.":"Rekora "+fmt(Math.max(0,best()-score))+" puan kaldı."}</p>${q?`<input id="nm" maxlength="12" placeholder="Adın" value="${esc(st.g(KN)||"")}" autocomplete="off"><button class="pr" data-a="save">Skoru kaydet</button>`:'<button class="pr" data-a="play">Tekrar oyna</button><button data-a="menu">Menü</button>'}</div>`;hud()}
+ov.onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;
+ if(a==="play"){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(x){}}if(ac&&ac.resume)ac.resume();start()}
+ else if(a==="board")ov.innerHTML=`<div class="cd"><h2>Skor tablosu</h2>${board(-1)}<button data-a="menu">Geri</button></div>`;
+ else if(a==="menu")menu();else if(a==="save")saveScore();
+ else if(a==="snd"){mute=!mute;st.s("ya.mute",mute?"1":"0");menu()}
+ else if(a==="resume"){ov.className="off";mode="play"}};
+ov.onkeydown=e=>{if(e.key==="Enter"&&e.target.id==="nm")saveScore()};
+$("#pz").onclick=pause;document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
+$("#bomb").onpointerdown=e=>{e.preventDefault();bomb()};
+// ---- ses
+function tone(f,d,ty,v,f2){if(mute||!ac)return;try{const o=ac.createOscillator(),k=ac.createGain(),n=ac.currentTime;o.type=ty;o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);k.gain.setValueAtTime(v,n);k.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(k);k.connect(ac.destination);o.start(n);o.stop(n+d)}catch(e){}}
+function snd(n){if(mute||!ac)return;if(n===0)return tone(500,.2,"square",.05,1000);try{const s=ac.createBufferSource();if(!nb){nb=ac.createBuffer(1,ac.sampleRate*.5,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}s.buffer=nb;const f=ac.createBiquadFilter(),k=ac.createGain(),now=ac.currentTime;f.type="lowpass";f.frequency.value=n===2?450:1500;k.gain.setValueAtTime(n===2?.4:.12,now);k.gain.exponentialRampToValueAtTime(.001,now+(n===2?.5:.14));s.connect(f);f.connect(k);k.connect(ac.destination);s.start()}catch(e){}}
+// ---- oyun
+const SPEC={d:{hp:1,r:12,v:100,sc:10,col:"#FF4DA6"},z:{hp:1,r:11,v:135,sc:20,col:"#FFB020"},t:{hp:6,r:18,v:55,sc:50,col:"#B79CFF"},s:{hp:3,r:14,v:70,sc:40,col:"#FF5D5D"},boss:{hp:90,r:46,v:40,sc:1500,col:"#22E6C9"}};
+const WP=[[[0,0]],[[-7,0],[7,0]],[[-9,-.1],[0,0],[9,.1]],[[-12,-.28],[-6,-.14],[0,0],[6,.14],[12,.28]]];
+const PUC={W:["#5CF2FF","⚡"],S:["#4DA3FF","◈"],B:["#FFB020","✸"],H:["#FF5D73","♥"]};
+const mult=()=>Math.min(8,1+(chain/5|0));
+function resize(){const d=Math.min(devicePixelRatio||1,2.5);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);u=Math.min(W/360,H/640);ship.r=11*u;
+ STAR=[];for(let i=0;i<70;i++)STAR.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*.8+.2});
+ if(mode!=="play"&&mode!=="pause"){ship.x=ship.tx=W/2;ship.y=ship.ty=H*.78}else{ship.tx=clamp(ship.tx,ship.r,W-ship.r);ship.ty=clamp(ship.ty,H*.25,H-ship.r*2)}}
+addEventListener("resize",resize);
+function start(){B=[];E=[];EB=[];PU=[];PT=[];TX=[];RG=[];t=0;score=0;disp=0;chain=0;comboT=0;bombs=1;bossN=0;stage=1;sp=1;shake=0;
+ ship={x:W/2,y:H*.78,tx:W/2,ty:H*.78,lives:3,sh:0,inv:1.5,wl:1,cd:0,r:11*u};mode="play";ov.className="off";hud()}
+function hud(){$("#lv").innerHTML="♥".repeat(ship.lives)+"<u>"+"♥".repeat(5-ship.lives)+"</u>"+(ship.sh?"<em>◈</em>":"")+`<s>Sv ${ship.wl}</s>`;$("#bm").textContent="Bomba ×"+bombs;$("#bomb").disabled=bombs<1;$("#bs").textContent="En iyi "+fmt(Math.max(best(),score))}
+function mk(k,x){const s=SPEC[k],hp=k==="boss"?s.hp+bossN*60:s.hp+(t>90&&k==="t"?3:0);E.push({k,x,x0:x,y:-40*u,hp,mh:hp,r:s.r*u,v:s.v*u*(1+Math.min(1,t/160)),sc:s.sc,col:s.col,ph:Math.random()*6,f:1+Math.random(),fl:0})}
+function spawn(dt){sp-=dt;if(sp>0)return;const boss=E.some(e=>e.k==="boss");sp=Math.max(.3,1.05-t*.006)*(boss?2.4:1);
+ if(!boss&&t>=60+bossN*75){mk("boss",W/2);txt("Dikkat! Dev gemi",W/2,H*.4,"#FF5D5D");return}
+ const r=Math.random();let k="d";if(t>14&&r<.28)k="z";else if(t>28&&r>.9)k="t";else if(t>40&&r>.8)k="s";mk(k,u*24+Math.random()*(W-u*48))}
+function aim(e,v,off){const a=Math.atan2(ship.y-e.y,ship.x-e.x)+off;EB.push({x:e.x,y:e.y,vx:Math.cos(a)*v*u,vy:Math.sin(a)*v*u})}
+function updE(e,dt){e.fl-=dt;e.f-=dt;
+ if(e.k==="d")e.y+=e.v*dt;
+ else if(e.k==="z"){e.y+=e.v*dt;e.x=clamp(e.x0+Math.sin(t*3+e.ph)*55*u,e.r,W-e.r)}
+ else if(e.k==="t"){e.y+=e.v*dt;if(e.f<=0&&e.y>0){e.f=2.2;aim(e,170,0)}}
+ else if(e.k==="s"){e.y+=e.v*dt*(e.y<H*.22?2:.15);e.x=clamp(e.x+Math.sin(t*2+e.ph)*30*u*dt,e.r,W-e.r);if(e.f<=0){e.f=1.7;aim(e,200,0)}}
+ else{e.y+=(H*.17-e.y)*dt*1.5;e.x=W/2+Math.sin(t*.7)*(W/2-e.r-8*u);
+  if(e.f<=0){e.f=Math.max(.7,1.3-bossN*.1);e.n=(e.n||0)+1;if(e.n%2)for(let i=0;i<12;i++){const a=i/12*6.283+t;EB.push({x:e.x,y:e.y,vx:Math.cos(a)*130*u,vy:Math.sin(a)*130*u})}else for(let i=-2;i<=2;i++)aim(e,200,i*.22)}}}
+function boom(x,y,c,n,r){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=(40+Math.random()*240)*u;PT.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c,s:(1.5+Math.random()*2.5)*u})}RG.push({x,y,r:r*.5,max:r*3,col:c,l:1,sp:r*7})}
+function txt(s,x,y,c){TX.push({s,x,y,c,l:1.2})}
+function drop(x,y,k){if(!k){const r=Math.random();k=r<.4?"W":r<.65?"S":r<.85?"B":ship.lives<5?"H":"W"}PU.push({x,y,k})}
+function kill(e){chain++;comboT=2.2;const p=e.sc*mult();score+=p;boom(e.x,e.y,e.col,e.k==="boss"?60:e.k==="t"?22:12,e.r);snd(e.k==="boss"?2:1);
+ if(e.sc>=40)txt("+"+fmt(p),e.x,e.y,e.col);
+ if(e.k==="boss"){bossN++;shake=22;drop(e.x,e.y,"B");drop(e.x-30*u,e.y,"W");drop(e.x+30*u,e.y,"H");txt("Dev gemi yok edildi!",W/2,H*.4,"#fff");vib([60,40,60])}
+ else if(Math.random()<(e.k==="t"?.35:e.k==="s"?.2:.07))drop(e.x,e.y)}
+function collect(p){snd(0);vib(15);const[,]=[0];
+ if(p.k==="W"){if(ship.wl<4){ship.wl++;txt("Silah güçlendi",p.x,p.y,PUC.W[0])}else{score+=200;txt("+200",p.x,p.y,PUC.W[0])}}
+ else if(p.k==="S"){ship.sh=1;txt("Kalkan",p.x,p.y,PUC.S[0])}
+ else if(p.k==="B"){bombs=Math.min(5,bombs+1);txt("Bomba +1",p.x,p.y,PUC.B[0])}
+ else{ship.lives=Math.min(5,ship.lives+1);txt("Can +1",p.x,p.y,PUC.H[0])}hud()}
+function bomb(){if(mode!=="play"||bombs<1)return;bombs--;EB.length=0;E.forEach(e=>{e.hp-=e.k==="boss"?25:99;e.fl=.2});RG.push({x:ship.x,y:ship.y,r:0,max:Math.max(W,H),col:"#FFB020",l:1,sp:1000});shake=16;snd(2);vib([40,40,40]);hud()}
+function hurt(){if(ship.inv>0||mode!=="play")return;
+ if(ship.sh>0){ship.sh=0;ship.inv=1.2;RG.push({x:ship.x,y:ship.y,r:ship.r,max:90*u,col:"#4DA3FF",l:1,sp:260});snd(0);hud();return}
+ ship.lives--;ship.inv=2;chain=0;comboT=0;ship.wl=Math.max(1,ship.wl-1);shake=14;boom(ship.x,ship.y,"#5CF2FF",24,ship.r);snd(2);vib(60);hud();
+ if(ship.lives<=0){mode="over";boom(ship.x,ship.y,"#fff",70,ship.r*2);setTimeout(showOver,1000)}}
+function fx(dt){PT.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.985;p.vy*=.985;p.l-=dt*1.4});PT=PT.filter(p=>p.l>0);
+ TX.forEach(x=>{x.y-=30*u*dt;x.l-=dt});TX=TX.filter(x=>x.l>0);RG.forEach(r=>{r.r+=r.sp*dt;r.l=1-r.r/r.max});RG=RG.filter(r=>r.l>0)}
+function update(dt){t+=dt;if(Math.floor(t/30)+1>stage){stage++;txt("Sektör "+stage,W/2,H*.32,"#5CF2FF")}
+ const k=Math.min(1,dt*16);ship.x+=(ship.tx-ship.x)*k;ship.y+=(ship.ty-ship.y)*k;ship.inv-=dt;ship.cd-=dt;
+ if(ship.cd<=0){ship.cd=[.17,.15,.14,.13][ship.wl-1];WP[ship.wl-1].forEach(([o,a])=>B.push({x:ship.x+o*u,y:ship.y-14*u,vx:Math.sin(a)*720*u,vy:-Math.cos(a)*720*u}))}
+ spawn(dt);B.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});B=B.filter(b=>b.y>-20&&b.x>-20&&b.x<W+20);
+ E.forEach(e=>updE(e,dt));EB.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});EB=EB.filter(b=>b.y>-20&&b.y<H+20&&b.x>-20&&b.x<W+20);
+ PU.forEach(p=>{p.y+=70*u*dt;const dx=ship.x-p.x,dy=ship.y-p.y,d=Math.hypot(dx,dy)||1;if(d<110*u){p.x+=dx/d*170*u*dt;p.y+=dy/d*170*u*dt}});
+ B=B.filter(b=>{for(const e of E)if(e.hp>0&&hit(b,e,e.r+3*u)){e.hp--;e.fl=.06;PT.push({x:b.x,y:b.y,vx:(Math.random()-.5)*140*u,vy:-Math.random()*90*u,l:.6,c:"#9DF9FF",s:2*u});return false}return true});
+ E=E.filter(e=>{if(e.hp<=0){kill(e);return false}if(hit(e,ship,e.r+ship.r*.55)){hurt();if(e.k!=="boss"){boom(e.x,e.y,e.col,10,e.r);return false}}return e.y<H+50*u});
+ EB=EB.filter(b=>{if(hit(b,ship,5*u+ship.r*.5)){hurt();return false}return true});
+ PU=PU.filter(p=>{if(hit(p,ship,ship.r+14*u)){collect(p);return false}return p.y<H+20*u});
+ comboT-=dt;if(comboT<=0)chain=0;fx(dt)}
+// ---- çizim
+function poly(x,y,r,n,rot){g.beginPath();for(let i=0;i<n;i++){const a=rot+i*6.283/n;i?g.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r):g.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}g.closePath()}
+function neon(c,fl){g.lineJoin="round";g.fillStyle=fl>0?"#fff":c;g.globalAlpha=fl>0?.9:.2;g.fill();g.strokeStyle=c;g.globalAlpha=.25;g.lineWidth=7*u;g.stroke();g.globalAlpha=1;g.lineWidth=2*u;g.stroke()}
+function render(){g.clearRect(0,0,W,H);g.save();if(shake>.3){g.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.88}
+ g.fillStyle="#fff";STAR.forEach(s=>{g.globalAlpha=.2+s.z*.6;g.fillRect(s.x,s.y,s.z*2.2,s.z*2.2)});g.globalAlpha=1;
+ PU.forEach(p=>{const c=PUC[p.k];g.beginPath();g.arc(p.x,p.y,11*u,0,6.3);neon(c[0],0);g.fillStyle=c[0];g.font=`700 ${13*u}px Sora,sans-serif`;g.textAlign="center";g.fillText(c[1],p.x,p.y+4.5*u)});
+ E.forEach(e=>{const{x,y,r,col}=e;if(e.k==="d")poly(x,y,r,4,t*2);else if(e.k==="z")poly(x,y,r,3,Math.PI/2);else if(e.k==="t")poly(x,y,r,6,0);else if(e.k==="s")poly(x,y,r,5,-Math.PI/2);else poly(x,y,r,8,t*.3);neon(col,e.fl);
+  if(e.k==="t"||e.k==="boss"){poly(x,y,r*.5,e.k==="t"?6:8,-t);g.stroke()}
+  if(e.k==="boss"){g.fillStyle="rgba(255,255,255,.15)";g.fillRect(x-r,y-r-14*u,2*r,5*u);g.fillStyle=col;g.fillRect(x-r,y-r-14*u,2*r*Math.max(0,e.hp/e.mh),5*u)}});
+ if(mode!=="over"&&!(ship.inv>0&&((t*14)|0)%2)){const{x,y}=ship;g.globalCompositeOperation="lighter";g.fillStyle="#FF9A3D";g.beginPath();g.moveTo(x-5*u,y+9*u);g.lineTo(x,y+(16+Math.random()*9)*u);g.lineTo(x+5*u,y+9*u);g.fill();g.globalCompositeOperation="source-over";
+  g.beginPath();g.moveTo(x,y-17*u);g.lineTo(x+12*u,y+11*u);g.lineTo(x,y+5*u);g.lineTo(x-12*u,y+11*u);g.closePath();neon("#5CF2FF",0);
+  if(ship.sh>0){g.beginPath();g.arc(x,y,ship.r*1.9,0,6.3);g.strokeStyle="#4DA3FF";g.lineWidth=2*u;g.globalAlpha=.8;g.stroke();g.globalAlpha=1}}
+ g.globalCompositeOperation="lighter";g.strokeStyle="#9DF9FF";g.lineWidth=3*u;g.lineCap="round";g.beginPath();B.forEach(b=>{g.moveTo(b.x,b.y);g.lineTo(b.x-b.vx*.022,b.y-b.vy*.022)});g.stroke();
+ EB.forEach(b=>{g.fillStyle="rgba(255,90,60,.3)";g.beginPath();g.arc(b.x,b.y,9*u,0,6.3);g.fill();g.fillStyle="#FFB07A";g.beginPath();g.arc(b.x,b.y,4.5*u,0,6.3);g.fill()});
+ RG.forEach(r=>{g.globalAlpha=Math.max(0,r.l);g.strokeStyle=r.col;g.lineWidth=4*u;g.beginPath();g.arc(r.x,r.y,r.r,0,6.3);g.stroke()});
+ PT.forEach(p=>{g.globalAlpha=Math.max(0,p.l);g.fillStyle=p.c;g.beginPath();g.arc(p.x,p.y,p.s,0,6.3);g.fill()});g.globalAlpha=1;g.globalCompositeOperation="source-over";
+ g.textAlign="center";g.lineJoin="round";TX.forEach(x=>{g.globalAlpha=Math.min(1,x.l*2);g.font=`800 ${15*u}px Sora,sans-serif`;g.lineWidth=4*u;g.strokeStyle="rgba(5,5,30,.8)";g.strokeText(x.s,x.x,x.y);g.fillStyle=x.c;g.fillText(x.s,x.x,x.y)});g.globalAlpha=1;g.restore()}
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.033,(now-last)/1000||.016);last=now;
+ if(mode!=="pause")STAR.forEach(s=>{s.y+=s.z*(mode==="play"?170:50)*u*dt;if(s.y>H){s.y=-4;s.x=Math.random()*W}});
+ if(mode==="play")update(dt);else if(mode==="over")fx(dt);
+ render();
+ if(Math.round(disp)!==score){disp+=(score-disp)*.18;if(Math.abs(score-disp)<1)disp=score;$("#sc").textContent=fmt(Math.round(disp))}
+ $("#mt").textContent="×"+mult();$("#mb").style.width=(chain>0?Math.max(0,comboT)/2.2*100:0)+"%";$("#bomb").hidden=mode!=="play"&&mode!=="pause"}
+// ---- kontrol (göreli sürükleme: parmak gemiyi örtmez)
+cv.onpointerdown=e=>{if(mode!=="play")return;cv.setPointerCapture(e.pointerId);ptr={x:e.clientX,y:e.clientY,sx:ship.tx,sy:ship.ty};e.preventDefault()};
+cv.onpointermove=e=>{if(!ptr||mode!=="play")return;ship.tx=clamp(ptr.sx+(e.clientX-ptr.x)*1.25,ship.r,W-ship.r);ship.ty=clamp(ptr.sy+(e.clientY-ptr.y)*1.25,H*.25,H-ship.r*2)};
+cv.onpointerup=cv.onpointercancel=()=>{ptr=null};
+addEventListener("keydown",e=>{if(mode==="play"&&(e.key===" "||e.key==="b"))bomb();if(e.key==="Escape")pause()});
+resize();menu();requestAnimationFrame(frame);
+</script>
 </body>
 </html>
