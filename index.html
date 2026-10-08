@@ -1,179 +1,435 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Yıldız Akını – Uzay aksiyon oyunu</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--b1:#050818;--b2:#150B3A;--ink:#EEF3FF;--mute:#8E9BC9;--acc:#5CF2FF;--hot:#FF4DA6;--card:rgba(14,18,48,.82);--ln:rgba(140,170,255,.22);
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b1:#03050F;--b2:#10082B}}
-:root[data-theme="dark"]{--b1:#03050F;--b2:#10082B}
-*,*::before,*::after{box-sizing:border-box}
-html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-body{background:radial-gradient(130% 80% at 50% 100%,var(--b2),var(--b1));color:var(--ink);font:500 16px Sora,system-ui,sans-serif}
-#app{position:relative;height:100%;max-width:560px;margin:0 auto;overflow:hidden}
-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-#hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
-#hud small{display:block;color:var(--mute);font-size:12px}
-#sc{font-size:32px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;text-shadow:0 0 18px var(--acc)}
-.c{text-align:center;padding-top:2px}
-#lv{font-size:18px;color:#FF5D73;letter-spacing:2px;white-space:nowrap}
-#lv u{text-decoration:none;opacity:.22}#lv em{font-style:normal;color:#4DA3FF;margin-left:6px}#lv s{text-decoration:none;color:var(--acc);font-size:12px;margin-left:8px;font-weight:700}
-#mx{position:relative;margin-top:6px;height:22px;width:92px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
-#mb{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--hot),#FFB020)}
-#mt{position:relative;display:block;text-align:center;font-weight:800;font-size:13px;line-height:22px}
-#pz{pointer-events:auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--ink);font:800 14px Sora;cursor:pointer}
-#bomb{position:absolute;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));border:1px solid #FFB020;background:rgba(255,176,32,.14);color:#FFB020;border-radius:16px;padding:14px 20px;font:800 15px Sora;cursor:pointer;box-shadow:0 0 22px -4px #FFB020}
-#bomb:disabled{opacity:.3;box-shadow:none}#bomb:active{transform:scale(.94)}
-#ov{position:absolute;inset:0;display:grid;place-items:center;padding:22px;background:rgba(3,4,16,.5);backdrop-filter:blur(6px);transition:opacity .25s}
-#ov.off{opacity:0;pointer-events:none}
-.cd{width:min(360px,100%);background:var(--card);border:1px solid var(--ln);border-radius:26px;padding:28px 24px;text-align:center;box-shadow:0 0 60px -20px var(--acc);max-height:100%;overflow:auto}
-.cd h1{margin:0 0 8px;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.05;background:linear-gradient(100deg,#5CF2FF,#B79CFF 50%,#FF4DA6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.cd h2{margin:0 0 10px;font-size:28px;font-weight:800}
-.cd p{margin:0 0 18px;color:var(--mute);font-size:15px;line-height:1.5}
-.bt{margin-bottom:18px}.bt small{color:var(--mute);display:block;font-size:13px}.bt b{font-size:34px;font-weight:800;color:var(--acc)}
-.big{font-size:52px;font-weight:800;line-height:1.1;text-shadow:0 0 24px var(--acc);margin-bottom:6px}
-button[data-a]{width:100%;border:1px solid var(--ln);background:rgba(255,255,255,.06);color:var(--ink);border-radius:14px;padding:13px;font:700 16px Sora;cursor:pointer;margin-top:10px}
-button.pr{border:0;background:linear-gradient(100deg,#19C6E0,#7A4DFF);color:#fff;font-size:18px;padding:15px;box-shadow:0 10px 26px -10px #5CF2FF}
-.two{display:flex;gap:10px}.two button{margin-top:10px}
-.rec{display:inline-block;margin-bottom:10px;padding:5px 14px;border-radius:99px;background:linear-gradient(90deg,#FFB020,#FF4DA6);color:#240A12;font-weight:800;font-size:13px}
-#nm{width:100%;border-radius:14px;border:1px solid var(--ln);background:rgba(255,255,255,.08);color:var(--ink);padding:13px;font:700 17px Sora;text-align:center;margin-bottom:4px;-webkit-user-select:text;user-select:text}
-.lb{list-style:none;margin:0 0 6px;padding:0;text-align:left}
-.lb li{display:flex;gap:12px;align-items:center;padding:9px 12px;border-radius:12px;font-size:15px}
-.lb li:nth-child(odd){background:rgba(255,255,255,.05)}
-.lb li.me{background:rgba(92,242,255,.18);outline:1px solid var(--acc)}
-.lb i{font-style:normal;color:var(--mute);width:20px}.lb span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb b{font-variant-numeric:tabular-nums}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Survivor | En İyi Skorlu Sürüm</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050508; overflow: hidden; touch-action: none; font-family: 'Orbitron', sans-serif; user-select: none; color: white; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; z-index: 20; }
+        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; }
+        .stats-box { background: rgba(0, 243, 255, 0.1); padding: 10px 20px; border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 8px; backdrop-filter: blur(5px); text-align: right; }
+        .stats-box span { display: block; font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .level-text { font-size: 2rem; font-weight: 900; color: #00f3ff; letter-spacing: 2px; }
+        
+        .xp-container { width: 300px; height: 12px; background: rgba(255,255,255,0.05); border-radius: 20px; margin-top: 15px; overflow: hidden; border: 1px solid rgba(0, 243, 255, 0.4); }
+        #xp-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00f3ff, #0055ff); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .hp-container { width: 300px; height: 16px; background: rgba(255,0,0,0.1); border-radius: 20px; margin-top: 10px; overflow: hidden; border: 1px solid #ff003c; }
+        #hp-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff003c, #ff5500); transition: width 0.3s ease; }
+
+        #damage-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; box-shadow: inset 0 0 150px rgba(255,0,0,0); transition: box-shadow 0.2s ease; z-index: 15; }
+        .heartbeat { animation: pump 1s infinite alternate; }
+        @keyframes pump { 0% { box-shadow: inset 0 0 50px rgba(255,0,0,0.3); } 100% { box-shadow: inset 0 0 150px rgba(255,0,60,0.8); } }
+
+        #combo-display { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 900; color: #ff00ff; opacity: 0; transition: opacity 0.3s, transform 0.1s; text-align: center; pointer-events: none; }
+        .rampage { color: #ff8800 !important; font-size: 4rem !important; animation: shake 0.3s infinite; }
+        @keyframes shake { 0% { transform: translate(-50%, -50%) rotate(-2deg); } 50% { transform: translate(-50%, -50%) rotate(2deg); } 100% { transform: translate(-50%, -50%) rotate(-2deg); } }
+
+        #level-up-modal, #game-over-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,20,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; pointer-events: auto; z-index: 100; }
+        #level-up-modal h1 { color: #00f3ff; font-size: 3.5rem; margin-bottom: 40px; letter-spacing: 4px; text-align: center; }
+        
+        .card-container { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 900px; padding: 20px; }
+        .upgrade-card { background: rgba(20,20,35,0.9); border: 2px solid rgba(0, 243, 255, 0.5); padding: 30px 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.2s; width: 240px; display: flex; flex-direction: column; align-items: center; }
+        .upgrade-card:hover { transform: translateY(-10px); border-color: #00f3ff; background: rgba(0, 243, 255, 0.1); }
+        .upgrade-card h3 { font-size: 1.4rem; margin-bottom: 15px; color: #fff; }
+        .upgrade-card p { font-size: 0.95rem; color: #a0aec0; font-family: 'Segoe UI', sans-serif;}
+        .card-icon { font-size: 3rem; margin-bottom: 15px; }
+
+        #game-over-modal h1 { color: #ff003c; font-size: 4rem; margin-bottom: 10px; }
+        #game-over-modal p { font-size: 1.2rem; color: #aaa; margin-bottom: 10px; text-align: center; line-height: 1.6; }
+        #restart-btn { background: #00f3ff; color: #000; border: none; padding: 15px 40px; font-size: 1.5rem; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 8px; margin-top: 20px; }
+
+        #joystick-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 10;}
+        #joystick-base { position: absolute; width: 120px; height: 120px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 50%; transform: translate(-50%, -50%); display: none; pointer-events: none; }
+        #joystick-stick { position: absolute; width: 50px; height: 50px; background: rgba(0, 243, 255, 0.8); border-radius: 50%; transform: translate(-50%, -50%); display: none; pointer-events: none; }
+    </style>
 </head>
 <body>
-<div id="app">
- <canvas id="cv" aria-label="Oyun alanı"></canvas>
- <div id="hud">
-  <div><small>Skor</small><b id="sc">0</b><small id="bs"></small></div>
-  <div class="c"><div id="lv"></div><div id="mx"><i id="mb"></i><span id="mt">×1</span></div></div>
-  <button id="pz" aria-label="Duraklat">II</button>
- </div>
- <button id="bomb" hidden><span id="bm">Bomba ×1</span></button>
- <div id="ov"></div>
-</div>
-<script>
-const $=s=>document.querySelector(s);
-const st={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const cv=$("#cv"),g=cv.getContext("2d"),ov=$("#ov"),KS="ya.skor.v1",KN="ya.ad.v1";
-let W,H,u=1,mode="menu",t=0,score=0,disp=0,chain=0,comboT=0,bombs=1,shake=0,sp=0,bossN=0,stage=1,last=performance.now(),mute=st.g("ya.mute")==="1",ac,nb,ptr=null;
-let ship={x:0,y:0,tx:0,ty:0,lives:3,sh:0,inv:0,wl:1,cd:0,r:10},B=[],E=[],EB=[],PU=[],PT=[],TX=[],RG=[],STAR=[];
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),hit=(a,b,r)=>{const x=a.x-b.x,y=a.y-b.y;return x*x+y*y<r*r};
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const vib=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
-const fmt=n=>n.toLocaleString("tr-TR");
-// ---- skor sistemi (anahtar sabit: güncellemede silinmez)
-const L=()=>{try{const a=JSON.parse(st.g(KS)||"[]");return(Array.isArray(a)?a:[]).filter(x=>x&&typeof x.s==="number").slice(0,10)}catch(e){return[]}};
-const best=()=>(L()[0]||{s:0}).s;
-function board(hl){const a=L();return a.length?'<ol class="lb">'+a.map((x,i)=>`<li class="${i===hl?"me":""}"><i>${i+1}</i><span>${esc(x.n)}</span><b>${fmt(x.s)}</b></li>`).join("")+"</ol>":"<p>Henüz skor yok. İlk rekor senin olsun.</p>"}
-function saveScore(){const nm=($("#nm").value.trim()||"Pilot").slice(0,12);st.s(KN,nm);const e={n:nm,s:score,d:Date.now()},a=L();a.push(e);a.sort((x,y)=>y.s-x.s);const b=a.slice(0,10);st.s(KS,JSON.stringify(b));
- ov.innerHTML=`<div class="cd"><h2>Skor tablosu</h2>${board(b.indexOf(e))}<button class="pr" data-a="play">Tekrar oyna</button><button data-a="menu">Menü</button></div>`}
-// ---- ekranlar
-function menu(){mode="menu";ov.className="";ov.innerHTML=`<div class="cd"><h1>Yıldız Akını</h1><p>Parmağınla gemiyi sürükle, ateş otomatik. Düşmanları vur, seriyi büyüt, dev gemileri indir.</p><div class="bt"><small>Rekor</small><b>${fmt(best())}</b></div><button class="pr" data-a="play">Oyna</button><div class="two"><button data-a="board">Skorlar</button><button data-a="snd">Ses: ${mute?"Kapalı":"Açık"}</button></div></div>`;hud()}
-function pause(){if(mode!=="play")return;mode="pause";ov.className="";ov.innerHTML=`<div class="cd"><h2>Duraklatıldı</h2><button class="pr" data-a="resume">Devam et</button><button data-a="menu">Ana menü</button></div>`}
-function showOver(){mode="over";const a=L(),q=score>0&&(a.length<10||score>a[a.length-1].s),rc=score>0&&score>(a[0]?a[0].s:0);
- ov.className="";ov.innerHTML=`<div class="cd">${rc?'<span class="rec">Yeni rekor</span>':""}<h2>Gemi düştü</h2><div class="big">${fmt(score)}</div><p>${rc?"Tablonun zirvesindesin.":q?"İlk 10'a girdin, adını yaz.":"Rekora "+fmt(Math.max(0,best()-score))+" puan kaldı."}</p>${q?`<input id="nm" maxlength="12" placeholder="Adın" value="${esc(st.g(KN)||"")}" autocomplete="off"><button class="pr" data-a="save">Skoru kaydet</button>`:'<button class="pr" data-a="play">Tekrar oyna</button><button data-a="menu">Menü</button>'}</div>`;hud()}
-ov.onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;
- if(a==="play"){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(x){}}if(ac&&ac.resume)ac.resume();start()}
- else if(a==="board")ov.innerHTML=`<div class="cd"><h2>Skor tablosu</h2>${board(-1)}<button data-a="menu">Geri</button></div>`;
- else if(a==="menu")menu();else if(a==="save")saveScore();
- else if(a==="snd"){mute=!mute;st.s("ya.mute",mute?"1":"0");menu()}
- else if(a==="resume"){ov.className="off";mode="play"}};
-ov.onkeydown=e=>{if(e.key==="Enter"&&e.target.id==="nm")saveScore()};
-$("#pz").onclick=pause;document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
-$("#bomb").onpointerdown=e=>{e.preventDefault();bomb()};
-// ---- ses
-function tone(f,d,ty,v,f2){if(mute||!ac)return;try{const o=ac.createOscillator(),k=ac.createGain(),n=ac.currentTime;o.type=ty;o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);k.gain.setValueAtTime(v,n);k.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(k);k.connect(ac.destination);o.start(n);o.stop(n+d)}catch(e){}}
-function snd(n){if(mute||!ac)return;if(n===0)return tone(500,.2,"square",.05,1000);try{const s=ac.createBufferSource();if(!nb){nb=ac.createBuffer(1,ac.sampleRate*.5,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}s.buffer=nb;const f=ac.createBiquadFilter(),k=ac.createGain(),now=ac.currentTime;f.type="lowpass";f.frequency.value=n===2?450:1500;k.gain.setValueAtTime(n===2?.4:.12,now);k.gain.exponentialRampToValueAtTime(.001,now+(n===2?.5:.14));s.connect(f);f.connect(k);k.connect(ac.destination);s.start()}catch(e){}}
-// ---- oyun
-const SPEC={d:{hp:1,r:12,v:100,sc:10,col:"#FF4DA6"},z:{hp:1,r:11,v:135,sc:20,col:"#FFB020"},t:{hp:6,r:18,v:55,sc:50,col:"#B79CFF"},s:{hp:3,r:14,v:70,sc:40,col:"#FF5D5D"},boss:{hp:90,r:46,v:40,sc:1500,col:"#22E6C9"}};
-const WP=[[[0,0]],[[-7,0],[7,0]],[[-9,-.1],[0,0],[9,.1]],[[-12,-.28],[-6,-.14],[0,0],[6,.14],[12,.28]]];
-const PUC={W:["#5CF2FF","⚡"],S:["#4DA3FF","◈"],B:["#FFB020","✸"],H:["#FF5D73","♥"]};
-const mult=()=>Math.min(8,1+(chain/5|0));
-function resize(){const d=Math.min(devicePixelRatio||1,2.5);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);u=Math.min(W/360,H/640);ship.r=11*u;
- STAR=[];for(let i=0;i<70;i++)STAR.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*.8+.2});
- if(mode!=="play"&&mode!=="pause"){ship.x=ship.tx=W/2;ship.y=ship.ty=H*.78}else{ship.tx=clamp(ship.tx,ship.r,W-ship.r);ship.ty=clamp(ship.ty,H*.25,H-ship.r*2)}}
-addEventListener("resize",resize);
-function start(){B=[];E=[];EB=[];PU=[];PT=[];TX=[];RG=[];t=0;score=0;disp=0;chain=0;comboT=0;bombs=1;bossN=0;stage=1;sp=1;shake=0;
- ship={x:W/2,y:H*.78,tx:W/2,ty:H*.78,lives:3,sh:0,inv:1.5,wl:1,cd:0,r:11*u};mode="play";ov.className="off";hud()}
-function hud(){$("#lv").innerHTML="♥".repeat(ship.lives)+"<u>"+"♥".repeat(5-ship.lives)+"</u>"+(ship.sh?"<em>◈</em>":"")+`<s>Sv ${ship.wl}</s>`;$("#bm").textContent="Bomba ×"+bombs;$("#bomb").disabled=bombs<1;$("#bs").textContent="En iyi "+fmt(Math.max(best(),score))}
-function mk(k,x){const s=SPEC[k],hp=k==="boss"?s.hp+bossN*60:s.hp+(t>90&&k==="t"?3:0);E.push({k,x,x0:x,y:-40*u,hp,mh:hp,r:s.r*u,v:s.v*u*(1+Math.min(1,t/160)),sc:s.sc,col:s.col,ph:Math.random()*6,f:1+Math.random(),fl:0})}
-function spawn(dt){sp-=dt;if(sp>0)return;const boss=E.some(e=>e.k==="boss");sp=Math.max(.3,1.05-t*.006)*(boss?2.4:1);
- if(!boss&&t>=60+bossN*75){mk("boss",W/2);txt("Dikkat! Dev gemi",W/2,H*.4,"#FF5D5D");return}
- const r=Math.random();let k="d";if(t>14&&r<.28)k="z";else if(t>28&&r>.9)k="t";else if(t>40&&r>.8)k="s";mk(k,u*24+Math.random()*(W-u*48))}
-function aim(e,v,off){const a=Math.atan2(ship.y-e.y,ship.x-e.x)+off;EB.push({x:e.x,y:e.y,vx:Math.cos(a)*v*u,vy:Math.sin(a)*v*u})}
-function updE(e,dt){e.fl-=dt;e.f-=dt;
- if(e.k==="d")e.y+=e.v*dt;
- else if(e.k==="z"){e.y+=e.v*dt;e.x=clamp(e.x0+Math.sin(t*3+e.ph)*55*u,e.r,W-e.r)}
- else if(e.k==="t"){e.y+=e.v*dt;if(e.f<=0&&e.y>0){e.f=2.2;aim(e,170,0)}}
- else if(e.k==="s"){e.y+=e.v*dt*(e.y<H*.22?2:.15);e.x=clamp(e.x+Math.sin(t*2+e.ph)*30*u*dt,e.r,W-e.r);if(e.f<=0){e.f=1.7;aim(e,200,0)}}
- else{e.y+=(H*.17-e.y)*dt*1.5;e.x=W/2+Math.sin(t*.7)*(W/2-e.r-8*u);
-  if(e.f<=0){e.f=Math.max(.7,1.3-bossN*.1);e.n=(e.n||0)+1;if(e.n%2)for(let i=0;i<12;i++){const a=i/12*6.283+t;EB.push({x:e.x,y:e.y,vx:Math.cos(a)*130*u,vy:Math.sin(a)*130*u})}else for(let i=-2;i<=2;i++)aim(e,200,i*.22)}}}
-function boom(x,y,c,n,r){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=(40+Math.random()*240)*u;PT.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c,s:(1.5+Math.random()*2.5)*u})}RG.push({x,y,r:r*.5,max:r*3,col:c,l:1,sp:r*7})}
-function txt(s,x,y,c){TX.push({s,x,y,c,l:1.2})}
-function drop(x,y,k){if(!k){const r=Math.random();k=r<.4?"W":r<.65?"S":r<.85?"B":ship.lives<5?"H":"W"}PU.push({x,y,k})}
-function kill(e){chain++;comboT=2.2;const p=e.sc*mult();score+=p;boom(e.x,e.y,e.col,e.k==="boss"?60:e.k==="t"?22:12,e.r);snd(e.k==="boss"?2:1);
- if(e.sc>=40)txt("+"+fmt(p),e.x,e.y,e.col);
- if(e.k==="boss"){bossN++;shake=22;drop(e.x,e.y,"B");drop(e.x-30*u,e.y,"W");drop(e.x+30*u,e.y,"H");txt("Dev gemi yok edildi!",W/2,H*.4,"#fff");vib([60,40,60])}
- else if(Math.random()<(e.k==="t"?.35:e.k==="s"?.2:.07))drop(e.x,e.y)}
-function collect(p){snd(0);vib(15);const[,]=[0];
- if(p.k==="W"){if(ship.wl<4){ship.wl++;txt("Silah güçlendi",p.x,p.y,PUC.W[0])}else{score+=200;txt("+200",p.x,p.y,PUC.W[0])}}
- else if(p.k==="S"){ship.sh=1;txt("Kalkan",p.x,p.y,PUC.S[0])}
- else if(p.k==="B"){bombs=Math.min(5,bombs+1);txt("Bomba +1",p.x,p.y,PUC.B[0])}
- else{ship.lives=Math.min(5,ship.lives+1);txt("Can +1",p.x,p.y,PUC.H[0])}hud()}
-function bomb(){if(mode!=="play"||bombs<1)return;bombs--;EB.length=0;E.forEach(e=>{e.hp-=e.k==="boss"?25:99;e.fl=.2});RG.push({x:ship.x,y:ship.y,r:0,max:Math.max(W,H),col:"#FFB020",l:1,sp:1000});shake=16;snd(2);vib([40,40,40]);hud()}
-function hurt(){if(ship.inv>0||mode!=="play")return;
- if(ship.sh>0){ship.sh=0;ship.inv=1.2;RG.push({x:ship.x,y:ship.y,r:ship.r,max:90*u,col:"#4DA3FF",l:1,sp:260});snd(0);hud();return}
- ship.lives--;ship.inv=2;chain=0;comboT=0;ship.wl=Math.max(1,ship.wl-1);shake=14;boom(ship.x,ship.y,"#5CF2FF",24,ship.r);snd(2);vib(60);hud();
- if(ship.lives<=0){mode="over";boom(ship.x,ship.y,"#fff",70,ship.r*2);setTimeout(showOver,1000)}}
-function fx(dt){PT.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.985;p.vy*=.985;p.l-=dt*1.4});PT=PT.filter(p=>p.l>0);
- TX.forEach(x=>{x.y-=30*u*dt;x.l-=dt});TX=TX.filter(x=>x.l>0);RG.forEach(r=>{r.r+=r.sp*dt;r.l=1-r.r/r.max});RG=RG.filter(r=>r.l>0)}
-function update(dt){t+=dt;if(Math.floor(t/30)+1>stage){stage++;txt("Sektör "+stage,W/2,H*.32,"#5CF2FF")}
- const k=Math.min(1,dt*16);ship.x+=(ship.tx-ship.x)*k;ship.y+=(ship.ty-ship.y)*k;ship.inv-=dt;ship.cd-=dt;
- if(ship.cd<=0){ship.cd=[.17,.15,.14,.13][ship.wl-1];WP[ship.wl-1].forEach(([o,a])=>B.push({x:ship.x+o*u,y:ship.y-14*u,vx:Math.sin(a)*720*u,vy:-Math.cos(a)*720*u}))}
- spawn(dt);B.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});B=B.filter(b=>b.y>-20&&b.x>-20&&b.x<W+20);
- E.forEach(e=>updE(e,dt));EB.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});EB=EB.filter(b=>b.y>-20&&b.y<H+20&&b.x>-20&&b.x<W+20);
- PU.forEach(p=>{p.y+=70*u*dt;const dx=ship.x-p.x,dy=ship.y-p.y,d=Math.hypot(dx,dy)||1;if(d<110*u){p.x+=dx/d*170*u*dt;p.y+=dy/d*170*u*dt}});
- B=B.filter(b=>{for(const e of E)if(e.hp>0&&hit(b,e,e.r+3*u)){e.hp--;e.fl=.06;PT.push({x:b.x,y:b.y,vx:(Math.random()-.5)*140*u,vy:-Math.random()*90*u,l:.6,c:"#9DF9FF",s:2*u});return false}return true});
- E=E.filter(e=>{if(e.hp<=0){kill(e);return false}if(hit(e,ship,e.r+ship.r*.55)){hurt();if(e.k!=="boss"){boom(e.x,e.y,e.col,10,e.r);return false}}return e.y<H+50*u});
- EB=EB.filter(b=>{if(hit(b,ship,5*u+ship.r*.5)){hurt();return false}return true});
- PU=PU.filter(p=>{if(hit(p,ship,ship.r+14*u)){collect(p);return false}return p.y<H+20*u});
- comboT-=dt;if(comboT<=0)chain=0;fx(dt)}
-// ---- çizim
-function poly(x,y,r,n,rot){g.beginPath();for(let i=0;i<n;i++){const a=rot+i*6.283/n;i?g.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r):g.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}g.closePath()}
-function neon(c,fl){g.lineJoin="round";g.fillStyle=fl>0?"#fff":c;g.globalAlpha=fl>0?.9:.2;g.fill();g.strokeStyle=c;g.globalAlpha=.25;g.lineWidth=7*u;g.stroke();g.globalAlpha=1;g.lineWidth=2*u;g.stroke()}
-function render(){g.clearRect(0,0,W,H);g.save();if(shake>.3){g.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.88}
- g.fillStyle="#fff";STAR.forEach(s=>{g.globalAlpha=.2+s.z*.6;g.fillRect(s.x,s.y,s.z*2.2,s.z*2.2)});g.globalAlpha=1;
- PU.forEach(p=>{const c=PUC[p.k];g.beginPath();g.arc(p.x,p.y,11*u,0,6.3);neon(c[0],0);g.fillStyle=c[0];g.font=`700 ${13*u}px Sora,sans-serif`;g.textAlign="center";g.fillText(c[1],p.x,p.y+4.5*u)});
- E.forEach(e=>{const{x,y,r,col}=e;if(e.k==="d")poly(x,y,r,4,t*2);else if(e.k==="z")poly(x,y,r,3,Math.PI/2);else if(e.k==="t")poly(x,y,r,6,0);else if(e.k==="s")poly(x,y,r,5,-Math.PI/2);else poly(x,y,r,8,t*.3);neon(col,e.fl);
-  if(e.k==="t"||e.k==="boss"){poly(x,y,r*.5,e.k==="t"?6:8,-t);g.stroke()}
-  if(e.k==="boss"){g.fillStyle="rgba(255,255,255,.15)";g.fillRect(x-r,y-r-14*u,2*r,5*u);g.fillStyle=col;g.fillRect(x-r,y-r-14*u,2*r*Math.max(0,e.hp/e.mh),5*u)}});
- if(mode!=="over"&&!(ship.inv>0&&((t*14)|0)%2)){const{x,y}=ship;g.globalCompositeOperation="lighter";g.fillStyle="#FF9A3D";g.beginPath();g.moveTo(x-5*u,y+9*u);g.lineTo(x,y+(16+Math.random()*9)*u);g.lineTo(x+5*u,y+9*u);g.fill();g.globalCompositeOperation="source-over";
-  g.beginPath();g.moveTo(x,y-17*u);g.lineTo(x+12*u,y+11*u);g.lineTo(x,y+5*u);g.lineTo(x-12*u,y+11*u);g.closePath();neon("#5CF2FF",0);
-  if(ship.sh>0){g.beginPath();g.arc(x,y,ship.r*1.9,0,6.3);g.strokeStyle="#4DA3FF";g.lineWidth=2*u;g.globalAlpha=.8;g.stroke();g.globalAlpha=1}}
- g.globalCompositeOperation="lighter";g.strokeStyle="#9DF9FF";g.lineWidth=3*u;g.lineCap="round";g.beginPath();B.forEach(b=>{g.moveTo(b.x,b.y);g.lineTo(b.x-b.vx*.022,b.y-b.vy*.022)});g.stroke();
- EB.forEach(b=>{g.fillStyle="rgba(255,90,60,.3)";g.beginPath();g.arc(b.x,b.y,9*u,0,6.3);g.fill();g.fillStyle="#FFB07A";g.beginPath();g.arc(b.x,b.y,4.5*u,0,6.3);g.fill()});
- RG.forEach(r=>{g.globalAlpha=Math.max(0,r.l);g.strokeStyle=r.col;g.lineWidth=4*u;g.beginPath();g.arc(r.x,r.y,r.r,0,6.3);g.stroke()});
- PT.forEach(p=>{g.globalAlpha=Math.max(0,p.l);g.fillStyle=p.c;g.beginPath();g.arc(p.x,p.y,p.s,0,6.3);g.fill()});g.globalAlpha=1;g.globalCompositeOperation="source-over";
- g.textAlign="center";g.lineJoin="round";TX.forEach(x=>{g.globalAlpha=Math.min(1,x.l*2);g.font=`800 ${15*u}px Sora,sans-serif`;g.lineWidth=4*u;g.strokeStyle="rgba(5,5,30,.8)";g.strokeText(x.s,x.x,x.y);g.fillStyle=x.c;g.fillText(x.s,x.x,x.y)});g.globalAlpha=1;g.restore()}
-function frame(now){requestAnimationFrame(frame);const dt=Math.min(.033,(now-last)/1000||.016);last=now;
- if(mode!=="pause")STAR.forEach(s=>{s.y+=s.z*(mode==="play"?170:50)*u*dt;if(s.y>H){s.y=-4;s.x=Math.random()*W}});
- if(mode==="play")update(dt);else if(mode==="over")fx(dt);
- render();
- if(Math.round(disp)!==score){disp+=(score-disp)*.18;if(Math.abs(score-disp)<1)disp=score;$("#sc").textContent=fmt(Math.round(disp))}
- $("#mt").textContent="×"+mult();$("#mb").style.width=(chain>0?Math.max(0,comboT)/2.2*100:0)+"%";$("#bomb").hidden=mode!=="play"&&mode!=="pause"}
-// ---- kontrol (göreli sürükleme: parmak gemiyi örtmez)
-cv.onpointerdown=e=>{if(mode!=="play")return;cv.setPointerCapture(e.pointerId);ptr={x:e.clientX,y:e.clientY,sx:ship.tx,sy:ship.ty};e.preventDefault()};
-cv.onpointermove=e=>{if(!ptr||mode!=="play")return;ship.tx=clamp(ptr.sx+(e.clientX-ptr.x)*1.25,ship.r,W-ship.r);ship.ty=clamp(ptr.sy+(e.clientY-ptr.y)*1.25,H*.25,H-ship.r*2)};
-cv.onpointerup=cv.onpointercancel=()=>{ptr=null};
-addEventListener("keydown",e=>{if(mode==="play"&&(e.key===" "||e.key==="b"))bomb();if(e.key==="Escape")pause()});
-resize();menu();requestAnimationFrame(frame);
-</script>
+
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="joystick-zone"></div>
+    <div id="joystick-base"></div>
+    <div id="joystick-stick"></div>
+    <div id="damage-flash"></div>
+
+    <div id="ui-layer">
+        <div class="top-bar">
+            <div>
+                <div class="level-text" id="level-display">LVL 1</div>
+                <div class="xp-container"><div id="xp-bar"></div></div>
+                <div class="hp-container"><div id="hp-bar"></div></div>
+            </div>
+            <div class="stats-box">
+                <span style="font-size: 0.9rem; color: #888;">SÜRE</span>
+                <span id="time-display">00:00</span>
+                <span style="font-size: 0.9rem; color: #888; margin-top: 5px;">SKOR</span>
+                <span id="score-display">0</span>
+            </div>
+        </div>
+        <div id="combo-display"></div>
+    </div>
+
+    <div id="level-up-modal">
+        <h1>YETENEK SEÇ</h1>
+        <div class="card-container" id="card-container"></div>
+    </div>
+
+    <!-- OYUN BİTTİ EKRANI (EN İYİ SKOR GÖSTERGESİ İLE) -->
+    <div id="game-over-modal">
+        <h1>OYUN BİTTİ</h1>
+        <p>
+            Hayatta Kalınan Süre: <span id="final-time"></span><br>
+            Skor: <span id="final-score" style="color: #fff; font-weight: bold;"></span><br>
+            <span style="color: #00f3ff; font-size: 1.1rem;">🏆 En İyi Skor: <span id="high-score">0</span></span>
+        </p>
+        <button id="restart-btn" onclick="location.reload()">TEKRAR DENE</button>
+    </div>
+
+    <script>
+        // --- SES MOTORU ---
+        let audioCtx;
+        function initAudio() {
+            if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        function playSound(type) {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            if(type === 'shoot') { osc.type = 'square'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
+            else if(type === 'xp') { osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(1800, now + 0.05); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
+            else if(type === 'levelup') { osc.type = 'square'; osc.frequency.setValueAtTime(400, now); osc.frequency.setValueAtTime(800, now + 0.2); gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now + 0.4); osc.start(now); osc.stop(now + 0.4); }
+        }
+
+        // --- KURULUM ---
+        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+        const ui = { 
+            xpBar: document.getElementById('xp-bar'), hpBar: document.getElementById('hp-bar'), level: document.getElementById('level-display'), score: document.getElementById('score-display'), 
+            time: document.getElementById('time-display'), levelModal: document.getElementById('level-up-modal'), cardContainer: document.getElementById('card-container'), combo: document.getElementById('combo-display'),
+            damageFlash: document.getElementById('damage-flash'), gameOverModal: document.getElementById('game-over-modal'), finalTime: document.getElementById('final-time'), finalScore: document.getElementById('final-score'), highScore: document.getElementById('high-score')
+        };
+        const joyBase = document.getElementById('joystick-base'), joyStick = document.getElementById('joystick-stick'), joyZone = document.getElementById('joystick-zone');
+
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+        let lastTime = 0, gameTime = 0, isPaused = false, isGameOver = false, score = 0, camera = { x: 0, y: 0 }, screenShake = 0;
+        let comboCount = 0, comboTimer = 0, rampageActive = false, rampageTimer = 0;
+        
+        // --- LOCAL STORAGE (EN İYİ SKOR HAFIZASI) ---
+        let highScore = localStorage.getItem('neon_high_score') || 0;
+
+        let entities = { enemies: [], bullets: [], particles: [], gems: [], texts: [], paints: [] };
+
+        const player = {
+            x: 0, y: 0, radius: 15, speed: 280, hp: 100, maxHp: 100, color: '#00f3ff',
+            damage: 25, fireRate: 1.2, shootCooldown: 0, multiShot: 1, critChance: 0.15,
+            level: 1, xp: 0, xpNeeded: 50, vx: 0, vy: 0
+        };
+
+        const upgradePool = [
+            { id: 'damage', icon: '💥', title: 'Ateş Gücü', desc: 'Mermi hasarını kalıcı olarak %25 artırır.' },
+            { id: 'firerate', icon: '⚡', title: 'Seri Atış', desc: 'Silahın ateş etme hızını %20 hızlandırır.' },
+            { id: 'multishot', icon: '🔫', title: 'Çift Namlu', desc: 'Mermi sayısını artırır (Sınır Yok).' },
+            { id: 'heal', icon: '⚕️', title: 'Nanobot Zırh', desc: 'Maksimum Canı %25 artırır ve canı fuller.' },
+            { id: 'speed', icon: '🚀', title: 'Motor Gücü', desc: 'Hareket hızını %15 artırır.' },
+            { id: 'crit', icon: '🎯', title: 'Keskin Nişancı', desc: 'Kritik vuruş ihtimalini artırır.' }
+        ];
+
+        // --- JOYSTICK ---
+        let isDragging = false, joyOrigin = { x: 0, y: 0 };
+        joyZone.addEventListener('pointerdown', e => {
+            initAudio(); if(isPaused || isGameOver) return;
+            isDragging = true; joyOrigin = { x: e.clientX, y: e.clientY };
+            joyBase.style.left = e.clientX + 'px'; joyBase.style.top = e.clientY + 'px';
+            joyStick.style.left = e.clientX + 'px'; joyStick.style.top = e.clientY + 'px';
+            joyBase.style.display = 'block'; joyStick.style.display = 'block';
+        });
+        joyZone.addEventListener('pointermove', e => {
+            if (!isDragging || isPaused || isGameOver) return;
+            const dx = e.clientX - joyOrigin.x, dy = e.clientY - joyOrigin.y;
+            const distance = Math.hypot(dx, dy), maxRadius = 60;
+            let angle = Math.atan2(dy, dx), clampedDist = Math.min(distance, maxRadius);
+            joyStick.style.left = (joyOrigin.x + Math.cos(angle) * clampedDist) + 'px'; joyStick.style.top = (joyOrigin.y + Math.sin(angle) * clampedDist) + 'px';
+            player.vx = (Math.cos(angle) * clampedDist) / maxRadius; player.vy = (Math.sin(angle) * clampedDist) / maxRadius;
+        });
+        window.addEventListener('pointerup', () => { isDragging = false; player.vx = 0; player.vy = 0; joyBase.style.display = 'none'; joyStick.style.display = 'none'; });
+
+        // --- SINIFLAR ---
+        class Paint {
+            constructor(x, y, color, size) { this.x = x; this.y = y; this.color = color; this.radius = size; }
+            draw() {
+                ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fillStyle = this.color; ctx.fill(); ctx.globalAlpha = 1;
+            }
+        }
+
+        class Enemy {
+            constructor(x, y, type) {
+                this.x = x; this.y = y; this.type = type;
+                this.radius = type === 'tank' ? 28 : (type === 'dasher' ? 14 : 18);
+                let timeScale = Math.min(1.5, 1 + (gameTime / 600)); 
+                let baseSpeed = type === 'tank' ? 90 : (type === 'dasher' ? 180 : 130); 
+                this.speed = baseSpeed * timeScale;
+                this.hp = (type === 'tank' ? 200 : 50) * (1 + (gameTime / 120));
+                this.color = type === 'tank' ? '#ff3300' : (type === 'dasher' ? '#cc00ff' : '#ff0055');
+                this.damage = type === 'tank' ? 25 : 10;
+            }
+            update(dt) {
+                const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                this.x += Math.cos(angle) * this.speed * dt; this.y += Math.sin(angle) * this.speed * dt;
+                if (Math.hypot(player.x - this.x, player.y - this.y) < this.radius + player.radius) {
+                    player.hp -= this.damage * dt; 
+                    ui.damageFlash.style.boxShadow = 'inset 0 0 150px rgba(255,0,0,0.6)';
+                    setTimeout(() => ui.damageFlash.style.boxShadow = 'inset 0 0 150px rgba(255,0,0,0)', 100);
+                    if(player.hp <= 0 && !isGameOver) { triggerGameOver(); }
+                    updateUI();
+                }
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fillStyle = '#050508'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = this.color; ctx.stroke();
+            }
+        }
+
+        class Bullet {
+            constructor(x, y, angle, damage) {
+                this.x = x; this.y = y; this.vx = Math.cos(angle) * 1200; this.vy = Math.sin(angle) * 1200; 
+                this.damage = damage; this.radius = 5; this.life = 1.5;
+            }
+            update(dt) { this.x += this.vx * dt; this.y += this.vy * dt; this.life -= dt; }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fillStyle = rampageActive ? '#ff8800' : '#00f3ff'; ctx.fill();
+            }
+        }
+
+        class Gem {
+            constructor(x, y, value) { this.x = x; this.y = y; this.value = value; this.radius = 6; }
+            update(dt) {
+                const dist = Math.hypot(player.x - this.x, player.y - this.y);
+                if (dist < 150) { 
+                    const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                    this.x += Math.cos(angle) * 600 * dt; this.y += Math.sin(angle) * 600 * dt;
+                }
+                if (dist < player.radius + this.radius) { this.life = 0; gainXP(this.value); playSound('xp'); }
+            }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = '#00ff88'; ctx.fill(); }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 300 + 50;
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                this.life = 1; this.radius = Math.random() * 4 + 1;
+            }
+            update(dt) { this.x += this.vx * dt; this.y += this.vy * dt; this.life -= dt; }
+            draw() { ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); ctx.globalAlpha = 1; }
+        }
+
+        class FloatingText {
+            constructor(x, y, text, isCrit) { this.x = x + (Math.random()*20-10); this.y = y; this.text = text; this.life = isCrit ? 0.8 : 0.4; this.vy = -60; this.isCrit = isCrit; }
+            update(dt) { this.y += this.vy * dt; this.life -= dt; }
+            draw() {
+                ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.isCrit ? '#ff003c' : '#fff'; ctx.font = `bold ${this.isCrit ? 22 : 14}px Orbitron`; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha = 1;
+            }
+        }
+
+        // --- OYUN MEKANİKLERİ ---
+        function gainXP(amount) {
+            player.xp += amount;
+            if (player.xp >= player.xpNeeded) {
+                player.level++; player.xp -= player.xpNeeded;
+                player.xpNeeded = Math.floor(player.xpNeeded * 1.3 + 20); 
+                showLevelUp();
+            }
+            updateUI();
+        }
+
+        function triggerComboKill() {
+            comboCount++; comboTimer = 3; 
+            ui.combo.innerText = comboCount + " HİT"; ui.combo.style.opacity = 1;
+            ui.combo.style.transform = `translate(-50%, -50%) scale(1.2)`;
+            setTimeout(() => ui.combo.style.transform = `translate(-50%, -50%) scale(1)`, 100);
+            if(comboCount % 20 === 0 && comboCount > 0) {
+                rampageActive = true; rampageTimer = 5; ui.combo.innerText = "RAMPAGE! x" + comboCount; ui.combo.classList.add('rampage'); playSound('levelup'); 
+            }
+        }
+
+        function updateUI() {
+            ui.xpBar.style.width = (player.xp / player.xpNeeded) * 100 + '%';
+            ui.hpBar.style.width = Math.max(0, (player.hp / player.maxHp) * 100) + '%';
+            ui.level.innerText = 'LVL ' + player.level; ui.score.innerText = score.toLocaleString();
+            if(player.hp / player.maxHp < 0.3) ui.damageFlash.classList.add('heartbeat'); else ui.damageFlash.classList.remove('heartbeat');
+        }
+
+        function showLevelUp() {
+            playSound('levelup'); isPaused = true; joyZone.style.pointerEvents = 'none';
+            let shuffled = [...upgradePool].sort(() => 0.5 - Math.random()); let selected = shuffled.slice(0, 3);
+            ui.cardContainer.innerHTML = ''; 
+            selected.forEach(u => {
+                ui.cardContainer.innerHTML += `<div class="upgrade-card" onclick="applyUpgrade('${u.id}')"><div class="card-icon">${u.icon}</div><h3>${u.title}</h3><p>${u.desc}</p></div>`;
+            });
+            ui.levelModal.style.display = 'flex';
+        }
+
+        function applyUpgrade(type) {
+            if(type === 'damage') player.damage *= 1.25; 
+            else if(type === 'firerate') player.fireRate *= 1.20; 
+            else if(type === 'multishot') player.multiShot += 1;
+            else if(type === 'heal') { player.maxHp = Math.floor(player.maxHp * 1.25); player.hp = player.maxHp; }
+            else if(type === 'speed') player.speed *= 1.15;
+            else if(type === 'crit') player.critChance += 0.15;
+            
+            ui.levelModal.style.display = 'none'; joyZone.style.pointerEvents = 'auto';
+            isPaused = false; lastTime = performance.now(); updateUI();
+        }
+
+        function triggerGameOver() {
+            isGameOver = true; isPaused = true; joyZone.style.pointerEvents = 'none';
+            
+            // REKOR KONTROLÜ VE KAYDI
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('neon_high_score', highScore);
+            }
+
+            const m = Math.floor(gameTime / 60).toString().padStart(2, '0'); const s = Math.floor(gameTime % 60).toString().padStart(2, '0');
+            ui.finalTime.innerText = `${m}:${s}`; 
+            ui.finalScore.innerText = score.toLocaleString();
+            ui.highScore.innerText = Number(highScore).toLocaleString();
+            ui.gameOverModal.style.display = 'flex';
+        }
+
+        let spawnTimer = 0;
+        function spawnManager(dt) {
+            if (entities.enemies.length >= 120) return; 
+            spawnTimer -= dt;
+            if (spawnTimer <= 0) {
+                spawnTimer = Math.max(0.15, 1.2 - (gameTime / 150)); 
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.max(canvas.width, canvas.height) / 2 + 100;
+                const ex = player.x + Math.cos(angle) * dist, ey = player.y + Math.sin(angle) * dist;
+                const rand = Math.random(); let type = 'normal';
+                if(gameTime > 20 && rand < 0.25) type = 'dasher';
+                if(gameTime > 60 && rand > 0.8) type = 'tank';
+                entities.enemies.push(new Enemy(ex, ey, type));
+            }
+        }
+
+        function autoShoot(dt) {
+            player.shootCooldown -= dt;
+            if (player.shootCooldown <= 0 && entities.enemies.length > 0) {
+                let target = null, minDist = Infinity;
+                entities.enemies.forEach(e => {
+                    const dist = Math.hypot(e.x - player.x, e.y - player.y);
+                    if (dist < minDist) { minDist = dist; target = e; }
+                });
+
+                if (target && minDist < 900) { 
+                    let currentFireRate = rampageActive ? player.fireRate * 1.5 : player.fireRate;
+                    player.shootCooldown = 1 / currentFireRate;
+                    playSound('shoot');
+                    const baseAngle = Math.atan2(target.y - player.y, target.x - player.x);
+                    const spread = Math.min(0.3, (Math.PI * 2) / player.multiShot); 
+                    const startAngle = baseAngle - (spread * (player.multiShot - 1)) / 2;
+                    for (let i = 0; i < player.multiShot; i++) {
+                        const angle = startAngle + i * spread;
+                        entities.bullets.push(new Bullet(player.x, player.y, angle, player.damage));
+                    }
+                }
+            }
+        }
+
+        // --- ANA DÖNGÜ ---
+        function update(currentTime) {
+            requestAnimationFrame(update);
+            if (isGameOver) return; 
+
+            let dt = (currentTime - lastTime) / 1000;
+            if(dt > 0.1) dt = 0.1; lastTime = currentTime;
+
+            if (isPaused) return;
+            gameTime += dt;
+            
+            const m = Math.floor(gameTime / 60).toString().padStart(2, '0');
+            const s = Math.floor(gameTime % 60).toString().padStart(2, '0');
+            ui.time.innerText = `${m}:${s}`;
+
+            if(comboTimer > 0) { comboTimer -= dt; if(comboTimer <= 0) { comboCount = 0; ui.combo.style.opacity = 0; } }
+            if(rampageActive) { rampageTimer -= dt; if(rampageTimer <= 0) { rampageActive = false; ui.combo.classList.remove('rampage'); } }
+
+            player.x += player.vx * player.speed * dt; player.y += player.vy * player.speed * dt;
+
+            if (screenShake > 0) {
+                screenShake -= dt * 30;
+                camera.x = player.x - canvas.width / 2 + (Math.random() - 0.5) * screenShake;
+                camera.y = player.y - canvas.height / 2 + (Math.random() - 0.5) * screenShake;
+            } else {
+                camera.x = player.x - canvas.width / 2; camera.y = player.y - canvas.height / 2;
+            }
+
+            spawnManager(dt); autoShoot(dt);
+
+            ctx.fillStyle = '#050508'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.save(); ctx.translate(-camera.x, -camera.y);
+
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.05)'; ctx.lineWidth = 1;
+            const gridSize = 150;
+            const startX = Math.floor(camera.x / gridSize) * gridSize; const startY = Math.floor(camera.y / gridSize) * gridSize;
+            ctx.beginPath();
+            for(let x = startX; x < startX + canvas.width + gridSize; x += gridSize) { ctx.moveTo(x, camera.y); ctx.lineTo(x, camera.y + canvas.height); }
+            for(let y = startY; y < startY + canvas.height + gridSize; y += gridSize) { ctx.moveTo(camera.x, y); ctx.lineTo(camera.x + canvas.width, y); }
+            ctx.stroke();
+
+            entities.paints.forEach(p => p.draw());
+
+            entities.gems.forEach(g => { g.update(dt); g.draw(); }); entities.gems = entities.gems.filter(g => g.life !== 0);
+            entities.particles.forEach(p => { p.update(dt); p.draw(); }); entities.particles = entities.particles.filter(p => p.life > 0);
+            entities.bullets.forEach(b => { b.update(dt); b.draw(); });
+            entities.enemies.forEach(e => { e.update(dt); e.draw(); });
+            entities.texts.forEach(t => { t.update(dt); t.draw(); }); entities.texts = entities.texts.filter(t => t.life > 0);
+
+            for (let i = entities.bullets.length - 1; i >= 0; i--) {
+                let b = entities.bullets[i]; let hit = false;
+                for (let j = entities.enemies.length - 1; j >= 0; j--) {
+                    let e = entities.enemies[j];
+                    if (Math.hypot(b.x - e.x, b.y - e.y) < b.radius + e.radius) {
+                        let isCrit = Math.random() < player.critChance;
+                        let finalDamage = isCrit ? b.damage * 2.5 : b.damage;
+                        e.hp -= finalDamage; hit = true;
+                        entities.texts.push(new FloatingText(e.x, e.y, Math.round(finalDamage), isCrit));
+                        
+                        if (e.hp <= 0) {
+                            score += e.type === 'tank' ? 50 : 10; updateUI(); screenShake = e.type === 'tank' ? 10 : 2; 
+                            entities.paints.push(new Paint(e.x, e.y, e.color, e.type === 'tank' ? 40 : 20));
+                            if(entities.paints.length > 60) entities.paints.shift(); 
+                            for(let k=0; k<6; k++) entities.particles.push(new Particle(e.x, e.y, e.color));
+                            entities.gems.push(new Gem(e.x, e.y, e.type === 'tank' ? 30 : 10)); 
+                            entities.enemies.splice(j, 1); triggerComboKill();
+                        }
+                        break; 
+                    }
+                }
+                if (hit || b.life <= 0) entities.bullets.splice(i, 1);
+            }
+
+            ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
+            ctx.fillStyle = player.color; ctx.fill();
+            ctx.beginPath(); ctx.arc(player.x, player.y, player.radius + 8, 0, Math.PI*2); ctx.strokeStyle = (rampageActive ? 'rgba(255, 136, 0, 0.8)' : 'rgba(0, 243, 255, 0.5)'); ctx.lineWidth = (rampageActive ? 4 : 2); ctx.stroke();
+
+            ctx.restore();
+        }
+
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        updateUI(); requestAnimationFrame(time => { lastTime = time; update(time); });
+    </script>
 </body>
 </html>
