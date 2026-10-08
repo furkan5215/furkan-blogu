@@ -1,435 +1,277 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Survivor | En İyi Skorlu Sürüm</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #050508; overflow: hidden; touch-action: none; font-family: 'Orbitron', sans-serif; user-select: none; color: white; }
-        canvas { display: block; width: 100vw; height: 100vh; }
-        
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; z-index: 20; }
-        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; }
-        .stats-box { background: rgba(0, 243, 255, 0.1); padding: 10px 20px; border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 8px; backdrop-filter: blur(5px); text-align: right; }
-        .stats-box span { display: block; font-size: 1.2rem; font-weight: 700; color: #fff; }
-        .level-text { font-size: 2rem; font-weight: 900; color: #00f3ff; letter-spacing: 2px; }
-        
-        .xp-container { width: 300px; height: 12px; background: rgba(255,255,255,0.05); border-radius: 20px; margin-top: 15px; overflow: hidden; border: 1px solid rgba(0, 243, 255, 0.4); }
-        #xp-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00f3ff, #0055ff); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Neon Survivor – Global Liderlik Tablosu</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050508;--ink:#E8F6FF;--cy:#00f3ff;--rd:#ff003c;--mt:#8aa0b8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#030307}}
+:root[data-theme="dark"]{--bg:#030307}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--ink);font-family:Orbitron,system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{position:absolute;inset:0}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#fl{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(255,0,40,.75))}
+#hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) 0 calc(14px + env(safe-area-inset-left,0px));pointer-events:none}
+#lv{font-size:clamp(20px,5.5vw,30px);font-weight:900;color:var(--cy);letter-spacing:2px;text-shadow:0 0 14px var(--cy)}
+.bar{position:relative;width:min(280px,52vw);height:12px;margin-top:7px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.07);border:1px solid rgba(0,243,255,.35)}
+.bar.h{height:16px;border-color:#ff003c;background:rgba(255,0,60,.1)}
+.bar i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#00f3ff,#0055ff);will-change:transform}
+.bar.h i{background:linear-gradient(90deg,#ff003c,#ff7a00);transform:scaleX(1)}
+.bar span{position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;font-weight:700}
+.r{text-align:right;background:rgba(0,243,255,.08);border:1px solid rgba(0,243,255,.3);border-radius:10px;padding:8px 14px;align-self:flex-start}
+.r small{display:block;font-size:10px;color:var(--mt)}.r b{display:block;font-size:clamp(15px,4vw,19px);margin-bottom:3px}
+#cb{position:absolute;left:50%;top:26%;transform:translateX(-50%);font-size:clamp(26px,8vw,44px);font-weight:900;color:#ff00ff;opacity:0;pointer-events:none;text-shadow:0 0 20px #f0f;white-space:nowrap}
+#cb.ra{color:#ff8800;text-shadow:0 0 24px #f80}
+#bn{position:absolute;left:0;right:0;top:40%;text-align:center;font-size:clamp(18px,6vw,32px);font-weight:900;letter-spacing:3px;color:#ffd400;opacity:0;pointer-events:none;text-shadow:0 0 18px #fa0}
+#bn.on{animation:bn 2.2s ease-out}
+@keyframes bn{0%{opacity:0;transform:scale(.7)}12%{opacity:1;transform:scale(1.08)}80%{opacity:1}100%{opacity:0}}
+#jb,#js{position:fixed;left:0;top:0;border-radius:50%;display:none;pointer-events:none;will-change:transform}
+#jb{width:112px;height:112px;margin:-56px 0 0 -56px;border:2px solid rgba(0,243,255,.3);background:rgba(0,243,255,.05)}
+#js{width:48px;height:48px;margin:-24px 0 0 -24px;background:rgba(0,243,255,.8);box-shadow:0 0 18px #00f3ff}
+.modal{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;background:rgba(2,8,18,.92);backdrop-filter:blur(6px);overflow-y:auto;touch-action:pan-y;text-align:center;z-index:50}
+.modal.on{display:flex}
+.modal h2{font-size:clamp(24px,7vw,38px);color:var(--cy);letter-spacing:3px;text-shadow:0 0 18px var(--cy)}
+.modal h2.rd{color:var(--rd);text-shadow:0 0 18px var(--rd)}
+.modal p{color:#b6c4d6;line-height:1.9;font-size:15px}.modal p b{color:#fff}
+.cards{display:grid;gap:10px;width:min(430px,92vw)}
+.card{display:grid;grid-template-columns:56px 1fr;grid-template-areas:"i h" "i p" "i s";column-gap:12px;align-items:center;text-align:left;background:rgba(20,22,40,.95);border:2px solid rgba(0,243,255,.45);border-radius:14px;padding:12px 14px;color:var(--ink);font-family:inherit;cursor:pointer}
+.card:active,.card:hover{border-color:var(--cy);background:rgba(0,243,255,.12)}
+.card b{grid-area:i;font-size:34px;text-align:center}.card h3{grid-area:h;font-size:15px}
+.card p{grid-area:p;font:13px/1.3 system-ui,sans-serif;color:#a9b8cc}.card small{grid-area:s;font-size:10px;color:var(--cy)}
+.btn{background:var(--cy);color:#001;border:0;border-radius:12px;padding:15px 38px;font:900 18px Orbitron,sans-serif;cursor:pointer;box-shadow:0 0 24px -4px var(--cy)}
+.rec{background:linear-gradient(90deg,#ffd400,#ff5500);color:#210;font-weight:900;font-size:12px;padding:5px 14px;border-radius:99px}
+#lb-box{position:absolute;right:calc(14px + env(safe-area-inset-right,0px));top:82px;background:rgba(0,243,255,.06);border:1px solid rgba(0,243,255,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:#a9b8cc;pointer-events:none;text-align:right;z-index:20;min-width:130px}
+#lb-box b{color:var(--cy);display:block;margin-bottom:5px;font-size:11px;letter-spacing:1px}
+.lb-r{display:flex;justify-content:space-between;gap:10px;margin-top:3px;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:2px}
+.lb-r span:last-child{color:#fff;font-weight:700}
+#in-name{background:rgba(0,0,0,.6);border:2px solid var(--cy);color:#fff;padding:12px;border-radius:8px;font:18px Orbitron,sans-serif;text-align:center;width:220px;outline:none;margin:8px 0}
+#in-name:focus{box-shadow:0 0 15px var(--cy);background:rgba(0,243,255,.1)}
+</style>
 
-        .hp-container { width: 300px; height: 16px; background: rgba(255,0,0,0.1); border-radius: 20px; margin-top: 10px; overflow: hidden; border: 1px solid #ff003c; }
-        #hp-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff003c, #ff5500); transition: width 0.3s ease; }
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        #damage-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; box-shadow: inset 0 0 150px rgba(255,0,0,0); transition: box-shadow 0.2s ease; z-index: 15; }
-        .heartbeat { animation: pump 1s infinite alternate; }
-        @keyframes pump { 0% { box-shadow: inset 0 0 50px rgba(255,0,0,0.3); } 100% { box-shadow: inset 0 0 150px rgba(255,0,60,0.8); } }
+const firebaseConfig = {
+  apiKey: "AIzaSyDrNq8_KP8RGscSRdOesV3-L7VwrQ_14RU",
+  authDomain: "foyun-9cd44.firebaseapp.com",
+  projectId: "foyun-9cd44",
+  storageBucket: "foyun-9cd44.firebasestorage.app",
+  messagingSenderId: "971696162998",
+  appId: "1:971696162998:web:06b1020590b85a66cd3e17"
+};
 
-        #combo-display { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 900; color: #ff00ff; opacity: 0; transition: opacity 0.3s, transform 0.1s; text-align: center; pointer-events: none; }
-        .rampage { color: #ff8800 !important; font-size: 4rem !important; animation: shake 0.3s infinite; }
-        @keyframes shake { 0% { transform: translate(-50%, -50%) rotate(-2deg); } 50% { transform: translate(-50%, -50%) rotate(2deg); } 100% { transform: translate(-50%, -50%) rotate(-2deg); } }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        #level-up-modal, #game-over-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,10,20,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; pointer-events: auto; z-index: 100; }
-        #level-up-modal h1 { color: #00f3ff; font-size: 3.5rem; margin-bottom: 40px; letter-spacing: 4px; text-align: center; }
-        
-        .card-container { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 900px; padding: 20px; }
-        .upgrade-card { background: rgba(20,20,35,0.9); border: 2px solid rgba(0, 243, 255, 0.5); padding: 30px 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: 0.2s; width: 240px; display: flex; flex-direction: column; align-items: center; }
-        .upgrade-card:hover { transform: translateY(-10px); border-color: #00f3ff; background: rgba(0, 243, 255, 0.1); }
-        .upgrade-card h3 { font-size: 1.4rem; margin-bottom: 15px; color: #fff; }
-        .upgrade-card p { font-size: 0.95rem; color: #a0aec0; font-family: 'Segoe UI', sans-serif;}
-        .card-icon { font-size: 3rem; margin-bottom: 15px; }
+window.globalLB = [];
 
-        #game-over-modal h1 { color: #ff003c; font-size: 4rem; margin-bottom: 10px; }
-        #game-over-modal p { font-size: 1.2rem; color: #aaa; margin-bottom: 10px; text-align: center; line-height: 1.6; }
-        #restart-btn { background: #00f3ff; color: #000; border: none; padding: 15px 40px; font-size: 1.5rem; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 8px; margin-top: 20px; }
+// Canlı Dinleyici (Skor değiştikçe sağ üst anında güncellenir)
+const q = query(collection(db, "scores"), orderBy("s", "desc"), limit(3));
+onSnapshot(q, (snapshot) => {
+  const list = [];
+  snapshot.forEach(doc => list.push(doc.data()));
+  window.globalLB = list;
+  if(window.drawLB) window.drawLB();
+}, (err) => console.log("LB hatası:", err));
 
-        #joystick-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; z-index: 10;}
-        #joystick-base { position: absolute; width: 120px; height: 120px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 50%; transform: translate(-50%, -50%); display: none; pointer-events: none; }
-        #joystick-stick { position: absolute; width: 50px; height: 50px; background: rgba(0, 243, 255, 0.8); border-radius: 50%; transform: translate(-50%, -50%); display: none; pointer-events: none; }
-    </style>
+window.sendScoreToFirestore = async (name, sc) => {
+  try {
+    await addDoc(collection(db, "scores"), {
+      n: name,
+      s: sc,
+      t: Date.now()
+    });
+  } catch(e) {
+    console.error("Kayıt hatası:", e);
+  }
+};
+</script>
 </head>
 <body>
+<div id="app">
+ <canvas id="cv" aria-label="Oyun alanı"></canvas>
+ <div id="fl"></div>
+ <div id="hud">
+  <div><div id="lv">SV 1</div><div class="bar"><i id="xb"></i></div><div class="bar h"><i id="hb"></i><span id="ht"></span></div></div>
+  <div class="r"><small>SÜRE</small><b id="tm">00:00</b><small>SKOR</small><b id="sc">0</b></div>
+ </div>
+ <div id="lb-box"></div>
+ <div id="cb"></div><div id="bn"></div>
+ <div id="jb"></div><div id="js"></div>
+ <div id="md" class="modal"></div>
+</div>
+<script>
+const $=i=>document.getElementById(i),R=Math.random,TAU=Math.PI*2;
+const cv=$("cv"),c=cv.getContext("2d",{alpha:false});
+const store={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const fmt=n=>Math.round(n).toLocaleString("tr-TR"),fn=d=>d>=1e6?(d/1e6).toFixed(1)+"M":d>=1e3?(d/1e3).toFixed(1)+"K":Math.round(d)+"";
+const mmss=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0");
 
-    <canvas id="gameCanvas"></canvas>
-    
-    <div id="joystick-zone"></div>
-    <div id="joystick-base"></div>
-    <div id="joystick-stick"></div>
-    <div id="damage-flash"></div>
+window.drawLB = function() {
+ const lb = window.globalLB || [];
+ let h = "<b>🌍 GLOBAL İLK 3</b>";
+ if(!lb.length) h += "<div class='lb-r'><span>Yükleniyor...</span></div>";
+ else lb.forEach((x,i)=>h+=`<div class='lb-r'><span>${i+1}. ${x.n}</span><span>${fmt(x.s)}</span></div>`);
+ $("lb-box").innerHTML = h;
+};
 
-    <div id="ui-layer">
-        <div class="top-bar">
-            <div>
-                <div class="level-text" id="level-display">LVL 1</div>
-                <div class="xp-container"><div id="xp-bar"></div></div>
-                <div class="hp-container"><div id="hp-bar"></div></div>
-            </div>
-            <div class="stats-box">
-                <span style="font-size: 0.9rem; color: #888;">SÜRE</span>
-                <span id="time-display">00:00</span>
-                <span style="font-size: 0.9rem; color: #888; margin-top: 5px;">SKOR</span>
-                <span id="score-display">0</span>
-            </div>
-        </div>
-        <div id="combo-display"></div>
-    </div>
+let W,H,dpr,Z,VW,VH;
+function resize(){const a=$("app");W=a.clientWidth;H=a.clientHeight;dpr=Math.min(devicePixelRatio||1,2);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);Z=Math.max(.6,Math.min(1.5,Math.min(W,H)/620));VW=W/Z;VH=H/Z}
+addEventListener("resize",resize);addEventListener("orientationchange",()=>setTimeout(resize,250));if(window.visualViewport)visualViewport.addEventListener("resize",resize);
 
-    <div id="level-up-modal">
-        <h1>YETENEK SEÇ</h1>
-        <div class="card-container" id="card-container"></div>
-    </div>
+let ac,sT={};
+function snd(k){if(!ac)return;const n=ac.currentTime;if((sT[k]||0)>n)return;sT[k]=n+(k==="k"?.05:.04);try{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);
+ if(k==="k"){o.type="square";o.frequency.setValueAtTime(150,n);o.frequency.exponentialRampToValueAtTime(40,n+.15);g.gain.setValueAtTime(.05,n);g.gain.exponentialRampToValueAtTime(.001,n+.15);o.start(n);o.stop(n+.15)}
+ else if(k==="xp"){o.type="sine";o.frequency.setValueAtTime(1200,n);o.frequency.exponentialRampToValueAtTime(1800,n+.05);g.gain.setValueAtTime(.02,n);g.gain.exponentialRampToValueAtTime(.001,n+.08);o.start(n);o.stop(n+.08)}
+ else{o.type="square";o.frequency.setValueAtTime(400,n);o.frequency.setValueAtTime(800,n+.15);g.gain.setValueAtTime(.05,n);g.linearRampToValueAtTime(0,n+.35);o.start(n);o.stop(n+.35)}}catch(e){}}
 
-    <!-- OYUN BİTTİ EKRANI (EN İYİ SKOR GÖSTERGESİ İLE) -->
-    <div id="game-over-modal">
-        <h1>OYUN BİTTİ</h1>
-        <p>
-            Hayatta Kalınan Süre: <span id="final-time"></span><br>
-            Skor: <span id="final-score" style="color: #fff; font-weight: bold;"></span><br>
-            <span style="color: #00f3ff; font-size: 1.1rem;">🏆 En İyi Skor: <span id="high-score">0</span></span>
-        </p>
-        <button id="restart-btn" onclick="location.reload()">TEKRAR DENE</button>
-    </div>
+const UP=[
+{id:"dmg",i:"💥",n:"Ateş Gücü",d:"Hasar +%25",f:p=>p.dmg*=1.25},
+{id:"rate",i:"⚡",n:"Seri Atış",d:"Ateş hızı +%18",f:p=>p.rate*=1.18},
+{id:"multi",i:"🔫",n:"Çoklu Namlu",d:"+1 mermi (sınır yok)",f:p=>p.multi++},
+{id:"hp",i:"❤️",n:"Nanobot Zırh",d:"Maks. can +%25 ve tam şifa",f:p=>{p.mhp=Math.round(p.mhp*1.25);p.hp=p.mhp}},
+{id:"spd",i:"🚀",n:"Motor Gücü",d:"Hız +%10",f:p=>p.spd*=1.1},
+{id:"crit",i:"🎯",n:"Keskin Nişancı",d:"Kritik şansı +%12",f:p=>p.crit+=.12},
+{id:"cdm",i:"☠️",n:"Ölümcül Vuruş",d:"Kritik hasarı +%40",f:p=>p.cdm+=.4},
+{id:"pierce",i:"🏹",n:"Delici Mermi",d:"Mermiler +1 düşmanı deler",f:p=>p.pierce++},
+{id:"orb",i:"🌀",n:"Dönen Bıçaklar",d:"Çevrende dönen +1 bıçak",f:p=>p.orb++},
+{id:"mag",i:"🧲",n:"Mıknatıs",d:"Toplama alanı +%35",f:p=>p.mag*=1.35},
+{id:"xp",i:"📈",n:"Hızlı Öğrenme",d:"XP kazancı +%20",f:p=>p.xpm*=1.2},
+{id:"reg",i:"🩹",n:"Yenilenme",d:"Saniyede +1.5 can yeniler",f:p=>p.reg+=1.5},
+{id:"arm",i:"🛡️",n:"Plazma Kalkan",d:"Gelen hasar -%12",f:p=>p.arm*=.88},
+{id:"boom",i:"💣",n:"Patlayıcı Uç",d:"Mermiler patlar, alan büyür",f:p=>p.boom++},
+{id:"nova",i:"🌟",n:"Nova Dalgası",d:"Şok dalgası atar",f:p=>p.nova++}];
+const TY={n:{r:15,hp:36,sp:115,dm:10,xp:6,sc:10,c:"#ff0055"},d:{r:12,hp:28,sp:185,dm:8,xp:9,sc:15,c:"#cc00ff"},t:{r:26,hp:230,sp:78,dm:20,xp:36,sc:50,c:"#ff5500"},e:{r:40,hp:2600,sp:92,dm:30,xp:260,sc:500,c:"#ffd400"}};
 
-    <script>
-        // --- SES MOTORU ---
-        let audioCtx;
-        function initAudio() {
-            if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-        }
-        function playSound(type) {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-            if(type === 'shoot') { osc.type = 'square'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
-            else if(type === 'xp') { osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(1800, now + 0.05); gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
-            else if(type === 'levelup') { osc.type = 'square'; osc.frequency.setValueAtTime(400, now); osc.frequency.setValueAtTime(800, now + 0.2); gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now + 0.4); osc.start(now); osc.stop(now + 0.4); }
-        }
+let P,Es,Bu,Pa,Gm,Tx,Pn,Rg,cam,t,score,combo,comboT,rampT,shake,paused,over,pend,spT,hordeT,eliteT,flash,uiT,last=performance.now(),grid=new Map(),ox=0,oy=0;
+const SZ=100,best=()=>({t:+store.g("ns.t")||0,l:+store.g("ns.l")||1});
 
-        // --- KURULUM ---
-        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-        const ui = { 
-            xpBar: document.getElementById('xp-bar'), hpBar: document.getElementById('hp-bar'), level: document.getElementById('level-display'), score: document.getElementById('score-display'), 
-            time: document.getElementById('time-display'), levelModal: document.getElementById('level-up-modal'), cardContainer: document.getElementById('card-container'), combo: document.getElementById('combo-display'),
-            damageFlash: document.getElementById('damage-flash'), gameOverModal: document.getElementById('game-over-modal'), finalTime: document.getElementById('final-time'), finalScore: document.getElementById('final-score'), highScore: document.getElementById('high-score')
-        };
-        const joyBase = document.getElementById('joystick-base'), joyStick = document.getElementById('joystick-stick'), joyZone = document.getElementById('joystick-zone');
+function init(){P={x:0,y:0,vx:0,vy:0,r:14,hp:100,mhp:100,spd:250,dmg:25,rate:1.3,multi:1,crit:.12,cdm:2.5,pierce:0,orb:0,mag:140,xpm:1,reg:0,arm:1,boom:0,nova:0,novaT:3,cd:0,lv:1,xp:0,need:40,up:{},tr:0};
+ Es=[];Bu=[];Pa=[];Gm=[];Tx=[];Pn=[];Rg=[];cam={x:0,y:0};t=0;score=0;combo=0;comboT=0;rampT=0;shake=0;paused=false;over=false;pend=0;spT=0;hordeT=35;eliteT=50;flash=0;uiT=0;$("md").className="modal";$("cb").style.opacity=0;ui();drawLB();}
+function ui(){$("lv").textContent="SV "+P.lv;$("xb").style.transform="scaleX("+Math.min(1,P.xp/P.need)+")";$("hb").style.transform="scaleX("+Math.max(0,P.hp/P.mhp)+")";$("ht").textContent=Math.ceil(Math.max(0,P.hp))+" / "+P.mhp;$("tm").textContent=mmss(t);$("sc").textContent=fmt(score)}
+function banner(s){const e=$("bn");e.textContent=s;e.classList.remove("on");void e.offsetWidth;e.classList.add("on")}
 
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+function gain(a){P.xp+=a*P.xpm;while(P.xp>=P.need){P.xp-=P.need;P.lv++;P.need=Math.floor(P.need*1.17+14);pend++}if(pend&&!paused)offer()}
+function offer(){paused=true;const cs=[...UP].sort(()=>R()-.5).slice(0,3);
+ $("md").innerHTML=`<h2>SEVİYE ${P.lv}${pend>1?" · "+pend+" SEÇİM":""}</h2><div class="cards">`+cs.map(u=>{const s=P.up[u.id]||0;return`<button class="card" data-u="${u.id}"><b>${u.i}</b><h3>${u.n}</h3><p>${u.d}</p><small>Sv ${s} → ${s+1}</small></button>`}).join("")+"</div>";$("md").className="modal on";snd("lv")}
 
-        let lastTime = 0, gameTime = 0, isPaused = false, isGameOver = false, score = 0, camera = { x: 0, y: 0 }, screenShake = 0;
-        let comboCount = 0, comboTimer = 0, rampageActive = false, rampageTimer = 0;
-        
-        // --- LOCAL STORAGE (EN İYİ SKOR HAFIZASI) ---
-        let highScore = localStorage.getItem('neon_high_score') || 0;
+$("md").onclick=e=>{if(e.target.closest("[data-r]")){init();last=performance.now();return}
+ const b=e.target.closest("[data-u]");if(!b)return;const u=UP.find(x=>x.id===b.dataset.u);u.f(P);P.up[u.id]=(P.up[u.id]||0)+1;pend--;
+ if(pend>0)offer();else{$("md").className="modal";paused=false;last=performance.now()}ui()};
 
-        let entities = { enemies: [], bullets: [], particles: [], gems: [], texts: [], paints: [] };
+function dead(){
+ over=true; snd("k");
+ const b=best(); if(t>b.t)store.s("ns.t",Math.floor(t)); if(P.lv>b.l)store.s("ns.l",P.lv);
+ 
+ const lb = window.globalLB || [];
+ const isTop = (lb.length < 3 || score > lb[lb.length-1].s) && score > 0;
 
-        const player = {
-            x: 0, y: 0, radius: 15, speed: 280, hp: 100, maxHp: 100, color: '#00f3ff',
-            damage: 25, fireRate: 1.2, shootCooldown: 0, multiShot: 1, critChance: 0.15,
-            level: 1, xp: 0, xpNeeded: 50, vx: 0, vy: 0
-        };
+ let h=`<h2 class="rd">OYUN BİTTİ</h2>
+ <p>Süre <b>${mmss(t)}</b> · Seviye <b>${P.lv}</b><br>Skor <b>${fmt(score)}</b></p>`;
 
-        const upgradePool = [
-            { id: 'damage', icon: '💥', title: 'Ateş Gücü', desc: 'Mermi hasarını kalıcı olarak %25 artırır.' },
-            { id: 'firerate', icon: '⚡', title: 'Seri Atış', desc: 'Silahın ateş etme hızını %20 hızlandırır.' },
-            { id: 'multishot', icon: '🔫', title: 'Çift Namlu', desc: 'Mermi sayısını artırır (Sınır Yok).' },
-            { id: 'heal', icon: '⚕️', title: 'Nanobot Zırh', desc: 'Maksimum Canı %25 artırır ve canı fuller.' },
-            { id: 'speed', icon: '🚀', title: 'Motor Gücü', desc: 'Hareket hızını %15 artırır.' },
-            { id: 'crit', icon: '🎯', title: 'Keskin Nişancı', desc: 'Kritik vuruş ihtimalini artırır.' }
-        ];
+ if(isTop){
+  h+=`<span class="rec" style="margin:10px 0; display:inline-block; font-size:14px;">🏆 GLOBAL İLK 3'E GİRDİN!</span><br>
+  <input type="text" id="in-name" placeholder="Adını Gir..." maxlength="10" autocomplete="off"><br>
+  <button class="btn" onclick="saveScore()">KAYDET</button>`;
+ }else{
+  h+=`<button class="btn" data-r="1" style="margin-top:10px">TEKRAR DENE</button>`;
+ }
+ $("md").innerHTML=h;
+ $("md").className="modal on";
+}
 
-        // --- JOYSTICK ---
-        let isDragging = false, joyOrigin = { x: 0, y: 0 };
-        joyZone.addEventListener('pointerdown', e => {
-            initAudio(); if(isPaused || isGameOver) return;
-            isDragging = true; joyOrigin = { x: e.clientX, y: e.clientY };
-            joyBase.style.left = e.clientX + 'px'; joyBase.style.top = e.clientY + 'px';
-            joyStick.style.left = e.clientX + 'px'; joyStick.style.top = e.clientY + 'px';
-            joyBase.style.display = 'block'; joyStick.style.display = 'block';
-        });
-        joyZone.addEventListener('pointermove', e => {
-            if (!isDragging || isPaused || isGameOver) return;
-            const dx = e.clientX - joyOrigin.x, dy = e.clientY - joyOrigin.y;
-            const distance = Math.hypot(dx, dy), maxRadius = 60;
-            let angle = Math.atan2(dy, dx), clampedDist = Math.min(distance, maxRadius);
-            joyStick.style.left = (joyOrigin.x + Math.cos(angle) * clampedDist) + 'px'; joyStick.style.top = (joyOrigin.y + Math.sin(angle) * clampedDist) + 'px';
-            player.vx = (Math.cos(angle) * clampedDist) / maxRadius; player.vy = (Math.sin(angle) * clampedDist) / maxRadius;
-        });
-        window.addEventListener('pointerup', () => { isDragging = false; player.vx = 0; player.vy = 0; joyBase.style.display = 'none'; joyStick.style.display = 'none'; });
+window.saveScore = () => {
+ const n = $("in-name").value.trim() || "Anonim";
+ if(window.sendScoreToFirestore) {
+   window.sendScoreToFirestore(n, score);
+ }
+ init(); last = performance.now();
+};
 
-        // --- SINIFLAR ---
-        class Paint {
-            constructor(x, y, color, size) { this.x = x; this.y = y; this.color = color; this.radius = size; }
-            draw() {
-                ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-                ctx.fillStyle = this.color; ctx.fill(); ctx.globalAlpha = 1;
-            }
-        }
+const gk=(x,y)=>(Math.floor((x-ox)/SZ)+1024)*2048+Math.floor((y-oy)/SZ)+1024;
+function near(x,y,rad,f){const a=Math.floor((x-ox-rad)/SZ)+1024,b=Math.floor((x-ox+rad)/SZ)+1024,c0=Math.floor((y-oy-rad)/SZ)+1024,d=Math.floor((y-oy+rad)/SZ)+1024;for(let i=a;i<=b;i++)for(let j=c0;j<=d;j++){const l=grid.get(i*2048+j);if(l)for(let k=0;k<l.length;k++)f(l[k])}}
+function mkE(k,x,y){const s=TY[k],hm=1+t/55+t*t/60000+P.lv*.02;Es.push({k,x,y,r:s.r,hp:s.hp*hm,mh:s.hp*hm,sp:s.sp*Math.min(1.6,1+t/500)*(.9+R()*.2),dm:s.dm*(1+t/240),xp:s.xp,sc:s.sc,c:s.c,fl:0,ob:0})}
+function ringPos(){const a=R()*TAU,d=Math.hypot(VW,VH)/2+60;return[P.x+Math.cos(a)*d,P.y+Math.sin(a)*d]}
+function spawn(dt){spT-=dt;const cap=Math.min(340,180+P.lv*4);
+ if(spT<=0&&Es.length<cap){spT=Math.max(.07,1-t/100);const n=1+Math.floor(P.lv/5)+(t>120?1:0);for(let i=0;i<n;i++){const r=R(),k=t>25&&r<.22?"d":t>55&&r>.82?"t":"n",p=ringPos();mkE(k,p[0],p[1])}}
+ hordeT-=dt;if(hordeT<=0){hordeT=40;const n=18+Math.min(30,P.lv),d=Math.hypot(VW,VH)/2+60;for(let i=0;i<n;i++){const a=i/n*TAU;mkE("n",P.x+Math.cos(a)*d,P.y+Math.sin(a)*d)}banner("SÜRÜ GELİYOR!")}
+ eliteT-=dt;if(eliteT<=0){eliteT=55;const p=ringPos();mkE("e",p[0],p[1]);banner("ELİT DÜŞMAN!")}}
+function dmgE(e,d,cr){if(e.dead)return;e.hp-=d;e.fl=.07;if(Tx.length<36)Tx.push({x:e.x+R()*16-8,y:e.y-e.r,s:fn(d),c:cr,l:cr?.8:.4});if(e.hp<=0)die(e)}
+function die(e){e.dead=1;score+=Math.round(e.sc*(1+Math.floor(combo/20)*.25));combo++;comboT=3;
+ if(combo%25===0){rampT=5;banner("RAMPAGE ×"+combo)}
+ if(Pa.length<260)for(let i=0;i<5;i++){const a=R()*TAU,s=50+R()*260;Pa.push({x:e.x,y:e.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:e.c,r:1+R()*3})}
+ if(Gm.length<140)Gm.push({x:e.x,y:e.y,v:e.xp,s:300});else gain(e.xp);
+ Pn.push({x:e.x,y:e.y,c:e.c,r:e.r*1.3});if(Pn.length>40)Pn.shift();shake=Math.min(14,shake+(e.k==="e"?12:e.k==="t"?5:1.2));snd("k");
+ if(e.k==="e"){pend++;banner("HAZİNE! +1 YETENEK");if(!paused)offer()}}
+function hitD(d){const cr=P.crit,tr=Math.floor(cr),ex=tr+(R()<cr-tr?1:0);return ex>0?{d:d*P.cdm*(1+.5*(ex-1)),c:1}:{d,c:0}}
+function ring(x,y,m,c){if(Rg.length<24)Rg.push({x,y,r:6,m,c,l:1})}
+function splash(x,y,d,sk){const rad=34+P.boom*16;ring(x,y,rad,"#ff8800");near(x,y,rad+40,e=>{if(e!==sk&&!e.dead&&Math.hypot(e.x-x,e.y-y)<rad+e.r)dmgE(e,d*.5,0)})}
 
-        class Enemy {
-            constructor(x, y, type) {
-                this.x = x; this.y = y; this.type = type;
-                this.radius = type === 'tank' ? 28 : (type === 'dasher' ? 14 : 18);
-                let timeScale = Math.min(1.5, 1 + (gameTime / 600)); 
-                let baseSpeed = type === 'tank' ? 90 : (type === 'dasher' ? 180 : 130); 
-                this.speed = baseSpeed * timeScale;
-                this.hp = (type === 'tank' ? 200 : 50) * (1 + (gameTime / 120));
-                this.color = type === 'tank' ? '#ff3300' : (type === 'dasher' ? '#cc00ff' : '#ff0055');
-                this.damage = type === 'tank' ? 25 : 10;
-            }
-            update(dt) {
-                const angle = Math.atan2(player.y - this.y, player.x - this.x);
-                this.x += Math.cos(angle) * this.speed * dt; this.y += Math.sin(angle) * this.speed * dt;
-                if (Math.hypot(player.x - this.x, player.y - this.y) < this.radius + player.radius) {
-                    player.hp -= this.damage * dt; 
-                    ui.damageFlash.style.boxShadow = 'inset 0 0 150px rgba(255,0,0,0.6)';
-                    setTimeout(() => ui.damageFlash.style.boxShadow = 'inset 0 0 150px rgba(255,0,0,0)', 100);
-                    if(player.hp <= 0 && !isGameOver) { triggerGameOver(); }
-                    updateUI();
-                }
-            }
-            draw() {
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-                ctx.fillStyle = '#050508'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = this.color; ctx.stroke();
-            }
-        }
+let jp=null,jo={x:0,y:0},jv={x:0,y:0},key={};
+cv.addEventListener("pointerdown",e=>{if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(x){}}if(ac&&ac.resume)ac.resume();if(jp!==null||paused||over)return;jp=e.pointerId;try{cv.setPointerCapture(jp)}catch(x){}jo={x:e.clientX,y:e.clientY};
+ const b=$("jb"),s=$("js");b.style.display=s.style.display="block";b.style.transform=s.style.transform=`translate3d(${jo.x}px,${jo.y}px,0)`;e.preventDefault()});
+cv.addEventListener("pointermove",e=>{if(e.pointerId!==jp)return;let dx=e.clientX-jo.x,dy=e.clientY-jo.y;const d=Math.hypot(dx,dy)||1,m=Math.min(d,56);dx=dx/d*m;dy=dy/d*m;
+ $("js").style.transform=`translate3d(${jo.x+dx}px,${jo.y+dy}px,0)`;const k=m/56;jv=k<.1?{x:0,y:0}:{x:dx/m*k,y:dy/m*k}});
+const rel=e=>{if(e.pointerId!==jp)return;jp=null;jv={x:0,y:0};$("jb").style.display=$("js").style.display="none"};
+cv.addEventListener("pointerup",rel);cv.addEventListener("pointercancel",rel);
+addEventListener("keydown",e=>key[e.key.toLowerCase()]=1);addEventListener("keyup",e=>key[e.key.toLowerCase()]=0);
 
-        class Bullet {
-            constructor(x, y, angle, damage) {
-                this.x = x; this.y = y; this.vx = Math.cos(angle) * 1200; this.vy = Math.sin(angle) * 1200; 
-                this.damage = damage; this.radius = 5; this.life = 1.5;
-            }
-            update(dt) { this.x += this.vx * dt; this.y += this.vy * dt; this.life -= dt; }
-            draw() {
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-                ctx.fillStyle = rampageActive ? '#ff8800' : '#00f3ff'; ctx.fill();
-            }
-        }
+function step(dt){t+=dt;
+ let ix=jv.x,iy=jv.y;if(!ix&&!iy){ix=(key.d||key.arrowright?1:0)-(key.a||key.arrowleft?1:0);iy=(key.s||key.arrowdown?1:0)-(key.w||key.arrowup?1:0);const m=Math.hypot(ix,iy);if(m>1){ix/=m;iy/=m}}
+ const k=1-Math.exp(-dt*12);P.vx+=(ix*P.spd-P.vx)*k;P.vy+=(iy*P.spd-P.vy)*k;P.x+=P.vx*dt;P.y+=P.vy*dt;
+ const ck=1-Math.exp(-dt*9);cam.x+=(P.x-cam.x)*ck;cam.y+=(P.y-cam.y)*ck;shake*=Math.exp(-dt*9);
+ P.hp=Math.min(P.mhp,P.hp+P.reg*dt);if(comboT>0){comboT-=dt;if(comboT<=0)combo=0}if(rampT>0)rampT-=dt;flash=Math.max(0,flash-dt);
+ P.tr-=dt;if(P.tr<=0&&Math.hypot(P.vx,P.vy)>60&&Pa.length<260){P.tr=.04;Pa.push({x:P.x,y:P.y,vx:0,vy:0,l:.5,c:"hsl("+((190+P.lv*6)%360)+",100%,60%)",r:P.r*.6})}
+ spawn(dt);
+ ox=P.x;oy=P.y;grid.clear();for(const e of Es){const q=gk(e.x,e.y);let l=grid.get(q);if(!l){l=[];grid.set(q,l)}l.push(e)}
+ for(const e of Es){const dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy)||1;
+  if(d>Math.hypot(VW,VH)/2+400){const p=ringPos();e.x=p[0];e.y=p[1];continue}
+  e.x+=dx/d*e.sp*dt;e.y+=dy/d*e.sp*dt;e.fl-=dt;
+  const l=grid.get(gk(e.x,e.y));if(l&&l.length<14)for(const o of l)if(o!==e){const ax=e.x-o.x,ay=e.y-o.y,ad=Math.hypot(ax,ay),m=e.r+o.r;if(ad>0&&ad<m){const p=(m-ad)*.3/ad;e.x+=ax*p;e.y+=ay*p}}
+  if(d<e.r+P.r){P.hp-=e.dm*P.arm*dt;flash=.25}}
+ if(P.hp<=0&&!over){dead();return}
+ P.cd-=dt;if(P.cd<=0){let tg=null,md=640*640;for(const e of Es){const d=(e.x-P.x)**2+(e.y-P.y)**2;if(d<md){md=d;tg=e}}
+  if(tg){P.cd=1/(P.rate*(rampT>0?1.5:1));const a=Math.atan2(tg.y-P.y,tg.x-P.x),n=P.multi,st=n>1?Math.min(.22,TAU/n):0,a0=a-st*(n-1)/2,rr=Math.min(9,4+P.dmg/200);
+   for(let i=0;i<n;i++){const an=a0+i*st;Bu.push({x:P.x,y:P.y,vx:Math.cos(an)*900,vy:Math.sin(an)*900,d:P.dmg,p:P.pierce,l:1.1,r:rr,h:[]})}}}
+ for(const b of Bu){b.x+=b.vx*dt;b.y+=b.vy*dt;b.l-=dt;if(b.l<=0){b.dead=1;continue}
+  near(b.x,b.y,50,e=>{if(b.dead||e.dead||b.h.includes(e))return;const dx=e.x-b.x,dy=e.y-b.y,rr=e.r+b.r;if(dx*dx+dy*dy>rr*rr)return;const h=hitD(b.d);dmgE(e,h.d,h.c);b.h.push(e);if(P.boom)splash(b.x,b.y,h.d,e);if(b.p--<=0)b.dead=1})}
+ for(let i=0;i<P.orb;i++){const a=t*3.2+i*TAU/P.orb,rd=70+Math.min(50,P.orb*4),bx=P.x+Math.cos(a)*rd,by=P.y+Math.sin(a)*rd;
+  near(bx,by,50,e=>{if(e.dead||e.ob>t||Math.hypot(e.x-bx,e.y-by)>e.r+13)return;e.ob=t+.3;const h=hitD(P.dmg*.7);dmgE(e,h.d,h.c)})}
+ if(P.nova){P.novaT-=dt;if(P.novaT<=0){P.novaT=Math.max(1.2,6/(1+.25*P.nova));const rad=140+P.nova*18;ring(P.x,P.y,rad,"#ffd400");shake+=5;for(const e of Es)if(!e.dead&&Math.hypot(e.x-P.x,e.y-P.y)<rad+e.r)dmgE(e,P.dmg*(2+.5*P.nova),0)}}
+ for(const g of Gm){const dx=P.x-g.x,dy=P.y-g.y,d=Math.hypot(dx,dy)||1;if(d<P.mag)g.m=1;if(g.m){g.s+=1400*dt;g.x+=dx/d*g.s*dt;g.y+=dy/d*g.s*dt}if(d<P.r+8){g.dead=1;gain(g.v);snd("xp")}}
+ for(const p of Pa){p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt*1.6}
+ for(const x of Tx){x.y-=55*dt;x.l-=dt}for(const r of Rg){r.r+=(r.m-r.r)*Math.min(1,dt*9)+30*dt;r.l=1-r.r/r.m}
+ Es=Es.filter(e=>!e.dead);Bu=Bu.filter(b=>!b.dead);Gm=Gm.filter(g=>!g.dead);Pa=Pa.filter(p=>p.l>0);Tx=Tx.filter(x=>x.l>0);Rg=Rg.filter(r=>r.l>0.02);
+ uiT-=dt;if(uiT<=0){uiT=.1;ui();const cb=$("cb");if(combo>2&&comboT>0){cb.textContent=combo+" HİT";cb.className=rampT>0?"ra":"";cb.style.opacity=Math.min(1,comboT)}else cb.style.opacity=0}
+ const fo=Math.max(flash*2,P.hp/P.mhp<.3?.35+.25*Math.sin(t*8):0);$("fl").style.opacity=Math.min(.8,fo).toFixed(2)}
 
-        class Gem {
-            constructor(x, y, value) { this.x = x; this.y = y; this.value = value; this.radius = 6; }
-            update(dt) {
-                const dist = Math.hypot(player.x - this.x, player.y - this.y);
-                if (dist < 150) { 
-                    const angle = Math.atan2(player.y - this.y, player.x - this.x);
-                    this.x += Math.cos(angle) * 600 * dt; this.y += Math.sin(angle) * 600 * dt;
-                }
-                if (dist < player.radius + this.radius) { this.life = 0; gainXP(this.value); playSound('xp'); }
-            }
-            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = '#00ff88'; ctx.fill(); }
-        }
-
-        class Particle {
-            constructor(x, y, color) {
-                this.x = x; this.y = y; this.color = color;
-                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 300 + 50;
-                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-                this.life = 1; this.radius = Math.random() * 4 + 1;
-            }
-            update(dt) { this.x += this.vx * dt; this.y += this.vy * dt; this.life -= dt; }
-            draw() { ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); ctx.globalAlpha = 1; }
-        }
-
-        class FloatingText {
-            constructor(x, y, text, isCrit) { this.x = x + (Math.random()*20-10); this.y = y; this.text = text; this.life = isCrit ? 0.8 : 0.4; this.vy = -60; this.isCrit = isCrit; }
-            update(dt) { this.y += this.vy * dt; this.life -= dt; }
-            draw() {
-                ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.isCrit ? '#ff003c' : '#fff'; ctx.font = `bold ${this.isCrit ? 22 : 14}px Orbitron`; ctx.fillText(this.text, this.x, this.y); ctx.globalAlpha = 1;
-            }
-        }
-
-        // --- OYUN MEKANİKLERİ ---
-        function gainXP(amount) {
-            player.xp += amount;
-            if (player.xp >= player.xpNeeded) {
-                player.level++; player.xp -= player.xpNeeded;
-                player.xpNeeded = Math.floor(player.xpNeeded * 1.3 + 20); 
-                showLevelUp();
-            }
-            updateUI();
-        }
-
-        function triggerComboKill() {
-            comboCount++; comboTimer = 3; 
-            ui.combo.innerText = comboCount + " HİT"; ui.combo.style.opacity = 1;
-            ui.combo.style.transform = `translate(-50%, -50%) scale(1.2)`;
-            setTimeout(() => ui.combo.style.transform = `translate(-50%, -50%) scale(1)`, 100);
-            if(comboCount % 20 === 0 && comboCount > 0) {
-                rampageActive = true; rampageTimer = 5; ui.combo.innerText = "RAMPAGE! x" + comboCount; ui.combo.classList.add('rampage'); playSound('levelup'); 
-            }
-        }
-
-        function updateUI() {
-            ui.xpBar.style.width = (player.xp / player.xpNeeded) * 100 + '%';
-            ui.hpBar.style.width = Math.max(0, (player.hp / player.maxHp) * 100) + '%';
-            ui.level.innerText = 'LVL ' + player.level; ui.score.innerText = score.toLocaleString();
-            if(player.hp / player.maxHp < 0.3) ui.damageFlash.classList.add('heartbeat'); else ui.damageFlash.classList.remove('heartbeat');
-        }
-
-        function showLevelUp() {
-            playSound('levelup'); isPaused = true; joyZone.style.pointerEvents = 'none';
-            let shuffled = [...upgradePool].sort(() => 0.5 - Math.random()); let selected = shuffled.slice(0, 3);
-            ui.cardContainer.innerHTML = ''; 
-            selected.forEach(u => {
-                ui.cardContainer.innerHTML += `<div class="upgrade-card" onclick="applyUpgrade('${u.id}')"><div class="card-icon">${u.icon}</div><h3>${u.title}</h3><p>${u.desc}</p></div>`;
-            });
-            ui.levelModal.style.display = 'flex';
-        }
-
-        function applyUpgrade(type) {
-            if(type === 'damage') player.damage *= 1.25; 
-            else if(type === 'firerate') player.fireRate *= 1.20; 
-            else if(type === 'multishot') player.multiShot += 1;
-            else if(type === 'heal') { player.maxHp = Math.floor(player.maxHp * 1.25); player.hp = player.maxHp; }
-            else if(type === 'speed') player.speed *= 1.15;
-            else if(type === 'crit') player.critChance += 0.15;
-            
-            ui.levelModal.style.display = 'none'; joyZone.style.pointerEvents = 'auto';
-            isPaused = false; lastTime = performance.now(); updateUI();
-        }
-
-        function triggerGameOver() {
-            isGameOver = true; isPaused = true; joyZone.style.pointerEvents = 'none';
-            
-            // REKOR KONTROLÜ VE KAYDI
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('neon_high_score', highScore);
-            }
-
-            const m = Math.floor(gameTime / 60).toString().padStart(2, '0'); const s = Math.floor(gameTime % 60).toString().padStart(2, '0');
-            ui.finalTime.innerText = `${m}:${s}`; 
-            ui.finalScore.innerText = score.toLocaleString();
-            ui.highScore.innerText = Number(highScore).toLocaleString();
-            ui.gameOverModal.style.display = 'flex';
-        }
-
-        let spawnTimer = 0;
-        function spawnManager(dt) {
-            if (entities.enemies.length >= 120) return; 
-            spawnTimer -= dt;
-            if (spawnTimer <= 0) {
-                spawnTimer = Math.max(0.15, 1.2 - (gameTime / 150)); 
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.max(canvas.width, canvas.height) / 2 + 100;
-                const ex = player.x + Math.cos(angle) * dist, ey = player.y + Math.sin(angle) * dist;
-                const rand = Math.random(); let type = 'normal';
-                if(gameTime > 20 && rand < 0.25) type = 'dasher';
-                if(gameTime > 60 && rand > 0.8) type = 'tank';
-                entities.enemies.push(new Enemy(ex, ey, type));
-            }
-        }
-
-        function autoShoot(dt) {
-            player.shootCooldown -= dt;
-            if (player.shootCooldown <= 0 && entities.enemies.length > 0) {
-                let target = null, minDist = Infinity;
-                entities.enemies.forEach(e => {
-                    const dist = Math.hypot(e.x - player.x, e.y - player.y);
-                    if (dist < minDist) { minDist = dist; target = e; }
-                });
-
-                if (target && minDist < 900) { 
-                    let currentFireRate = rampageActive ? player.fireRate * 1.5 : player.fireRate;
-                    player.shootCooldown = 1 / currentFireRate;
-                    playSound('shoot');
-                    const baseAngle = Math.atan2(target.y - player.y, target.x - player.x);
-                    const spread = Math.min(0.3, (Math.PI * 2) / player.multiShot); 
-                    const startAngle = baseAngle - (spread * (player.multiShot - 1)) / 2;
-                    for (let i = 0; i < player.multiShot; i++) {
-                        const angle = startAngle + i * spread;
-                        entities.bullets.push(new Bullet(player.x, player.y, angle, player.damage));
-                    }
-                }
-            }
-        }
-
-        // --- ANA DÖNGÜ ---
-        function update(currentTime) {
-            requestAnimationFrame(update);
-            if (isGameOver) return; 
-
-            let dt = (currentTime - lastTime) / 1000;
-            if(dt > 0.1) dt = 0.1; lastTime = currentTime;
-
-            if (isPaused) return;
-            gameTime += dt;
-            
-            const m = Math.floor(gameTime / 60).toString().padStart(2, '0');
-            const s = Math.floor(gameTime % 60).toString().padStart(2, '0');
-            ui.time.innerText = `${m}:${s}`;
-
-            if(comboTimer > 0) { comboTimer -= dt; if(comboTimer <= 0) { comboCount = 0; ui.combo.style.opacity = 0; } }
-            if(rampageActive) { rampageTimer -= dt; if(rampageTimer <= 0) { rampageActive = false; ui.combo.classList.remove('rampage'); } }
-
-            player.x += player.vx * player.speed * dt; player.y += player.vy * player.speed * dt;
-
-            if (screenShake > 0) {
-                screenShake -= dt * 30;
-                camera.x = player.x - canvas.width / 2 + (Math.random() - 0.5) * screenShake;
-                camera.y = player.y - canvas.height / 2 + (Math.random() - 0.5) * screenShake;
-            } else {
-                camera.x = player.x - canvas.width / 2; camera.y = player.y - canvas.height / 2;
-            }
-
-            spawnManager(dt); autoShoot(dt);
-
-            ctx.fillStyle = '#050508'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.save(); ctx.translate(-camera.x, -camera.y);
-
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.05)'; ctx.lineWidth = 1;
-            const gridSize = 150;
-            const startX = Math.floor(camera.x / gridSize) * gridSize; const startY = Math.floor(camera.y / gridSize) * gridSize;
-            ctx.beginPath();
-            for(let x = startX; x < startX + canvas.width + gridSize; x += gridSize) { ctx.moveTo(x, camera.y); ctx.lineTo(x, camera.y + canvas.height); }
-            for(let y = startY; y < startY + canvas.height + gridSize; y += gridSize) { ctx.moveTo(camera.x, y); ctx.lineTo(camera.x + canvas.width, y); }
-            ctx.stroke();
-
-            entities.paints.forEach(p => p.draw());
-
-            entities.gems.forEach(g => { g.update(dt); g.draw(); }); entities.gems = entities.gems.filter(g => g.life !== 0);
-            entities.particles.forEach(p => { p.update(dt); p.draw(); }); entities.particles = entities.particles.filter(p => p.life > 0);
-            entities.bullets.forEach(b => { b.update(dt); b.draw(); });
-            entities.enemies.forEach(e => { e.update(dt); e.draw(); });
-            entities.texts.forEach(t => { t.update(dt); t.draw(); }); entities.texts = entities.texts.filter(t => t.life > 0);
-
-            for (let i = entities.bullets.length - 1; i >= 0; i--) {
-                let b = entities.bullets[i]; let hit = false;
-                for (let j = entities.enemies.length - 1; j >= 0; j--) {
-                    let e = entities.enemies[j];
-                    if (Math.hypot(b.x - e.x, b.y - e.y) < b.radius + e.radius) {
-                        let isCrit = Math.random() < player.critChance;
-                        let finalDamage = isCrit ? b.damage * 2.5 : b.damage;
-                        e.hp -= finalDamage; hit = true;
-                        entities.texts.push(new FloatingText(e.x, e.y, Math.round(finalDamage), isCrit));
-                        
-                        if (e.hp <= 0) {
-                            score += e.type === 'tank' ? 50 : 10; updateUI(); screenShake = e.type === 'tank' ? 10 : 2; 
-                            entities.paints.push(new Paint(e.x, e.y, e.color, e.type === 'tank' ? 40 : 20));
-                            if(entities.paints.length > 60) entities.paints.shift(); 
-                            for(let k=0; k<6; k++) entities.particles.push(new Particle(e.x, e.y, e.color));
-                            entities.gems.push(new Gem(e.x, e.y, e.type === 'tank' ? 30 : 10)); 
-                            entities.enemies.splice(j, 1); triggerComboKill();
-                        }
-                        break; 
-                    }
-                }
-                if (hit || b.life <= 0) entities.bullets.splice(i, 1);
-            }
-
-            ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
-            ctx.fillStyle = player.color; ctx.fill();
-            ctx.beginPath(); ctx.arc(player.x, player.y, player.radius + 8, 0, Math.PI*2); ctx.strokeStyle = (rampageActive ? 'rgba(255, 136, 0, 0.8)' : 'rgba(0, 243, 255, 0.5)'); ctx.lineWidth = (rampageActive ? 4 : 2); ctx.stroke();
-
-            ctx.restore();
-        }
-
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-        updateUI(); requestAnimationFrame(time => { lastTime = time; update(time); });
-    </script>
+function poly(x,y,r,n,rot){c.beginPath();for(let i=0;i<n;i++){const a=rot+i*TAU/n;i?c.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r):c.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}c.closePath()}
+function draw(){c.setTransform(1,0,0,1,0,0);c.fillStyle="#050508";c.fillRect(0,0,cv.width,cv.height);
+ const kk=dpr*Z,sx=shake>.3?(R()-.5)*shake:0,sy=shake>.3?(R()-.5)*shake:0;c.setTransform(kk,0,0,kk,(VW/2-cam.x+sx)*kk,(VH/2-cam.y+sy)*kk);
+ const L=cam.x-VW/2,T=cam.y-VH/2,Rr=L+VW,Bb=T+VH,hue=(190+P.lv*6)%360,col="hsl("+hue+",100%,60%)";
+ c.strokeStyle="rgba(0,243,255,.07)";c.lineWidth=1;c.beginPath();for(let x=Math.floor(L/140)*140;x<Rr;x+=140){c.moveTo(x,T);c.lineTo(x,Bb)}for(let y=Math.floor(T/140)*140;y<Bb;y+=140){c.moveTo(L,y);c.lineTo(Rr,y)}c.stroke();
+ c.globalAlpha=.22;for(const p of Pn){c.fillStyle=p.c;c.beginPath();c.arc(p.x,p.y,p.r,0,TAU);c.fill()}c.globalAlpha=1;
+ c.fillStyle="#00ff88";for(const g of Gm){c.beginPath();c.arc(g.x,g.y,5.5,0,TAU);c.fill()}
+ c.lineJoin="round";
+ for(const e of Es){if(e.x<L-60||e.x>Rr+60||e.y<T-60||e.y>Bb+60)continue;
+  if(e.k==="d")poly(e.x,e.y,e.r*1.2,3,Math.atan2(P.y-e.y,P.x-e.x));else if(e.k==="e")poly(e.x,e.y,e.r,6,t*.5);else{c.beginPath();c.arc(e.x,e.y,e.r,0,TAU)}
+  c.fillStyle=e.fl>0?"#fff":"#050508";c.fill();c.lineWidth=e.k==="n"||e.k==="d"?3:5;c.strokeStyle=e.c;c.stroke();
+  if(e.mh>150&&e.hp<e.mh){c.fillStyle="rgba(255,255,255,.2)";c.fillRect(e.x-e.r,e.y-e.r-9,e.r*2,4);c.fillStyle=e.c;c.fillRect(e.x-e.r,e.y-e.r-9,e.r*2*Math.max(0,e.hp/e.mh),4)}}
+ c.globalCompositeOperation="lighter";c.fillStyle=rampT>0?"#ff8800":col;for(const b of Bu){c.beginPath();c.arc(b.x,b.y,b.r,0,TAU);c.fill()}
+ c.strokeStyle=col;c.lineWidth=3;for(let i=0;i<P.orb;i++){const a=t*3.2+i*TAU/P.orb,rd=70+Math.min(50,P.orb*4);poly(P.x+Math.cos(a)*rd,P.y+Math.sin(a)*rd,13,4,a*2);c.stroke()}
+ for(const r of Rg){c.globalAlpha=Math.max(0,r.l);c.strokeStyle=r.c;c.lineWidth=5;c.beginPath();c.arc(r.x,r.y,r.r,0,TAU);c.stroke()}
+ for(const p of Pa){c.globalAlpha=Math.max(0,p.l);c.fillStyle=p.c;c.beginPath();c.arc(p.x,p.y,p.r,0,TAU);c.fill()}c.globalAlpha=1;
+ const au=P.r+8+Math.min(30,P.lv*.9)+Math.sin(t*4)*2;c.strokeStyle=rampT>0?"rgba(255,136,0,.8)":col;c.globalAlpha=.55;c.lineWidth=rampT>0?4:2;c.beginPath();c.arc(P.x,P.y,au,0,TAU);c.stroke();
+ c.globalAlpha=.12;c.fillStyle=col;c.beginPath();c.arc(P.x,P.y,au,0,TAU);c.fill();c.globalAlpha=1;c.globalCompositeOperation="source-over";
+ c.fillStyle=col;c.beginPath();c.arc(P.x,P.y,P.r,0,TAU);c.fill();c.fillStyle="#fff";c.beginPath();c.arc(P.x,P.y,P.r*.45,0,TAU);c.fill();
+ c.textAlign="center";c.lineWidth=3;c.strokeStyle="rgba(0,0,20,.8)";for(const x of Tx){c.globalAlpha=Math.min(1,x.l*2.5);c.font=(x.c?"900 22px":"700 14px")+" Orbitron,sans-serif";c.strokeText(x.s,x.x,x.y);c.fillStyle=x.c?"#ff3355":"#fff";c.fillText(x.s,x.x,x.y)}c.globalAlpha=1}
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000||.016);last=now;if(!paused&&!over)step(dt);draw()}
+resize();init();banner("Ekrana dokun ve sürükle");requestAnimationFrame(loop);
+</script>
 </body>
 </html>
